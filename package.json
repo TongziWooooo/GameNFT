@@ -8,6 +8,7 @@
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
     "@usedapp/core": "^0.7.3",
+    "dotenv": "^16.0.0",
     "react": "^17.0.2",
     "react-color-extractor": "^1.1.2",
     "react-dom": "^17.0.2",
@@ -40,5 +41,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.0.5",
+    "hardhat": "^2.9.1"
   }
 }
