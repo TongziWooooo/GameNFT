@@ -1,8 +1,9 @@
 import react, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { useEthers, useEtherBalance } from "@usedapp/core";
-
+import { useNavigate } from "react-router-dom";
 const Header = () => {
+    let navigate = useNavigate();
 
     const {activateBrowserWallet, account} = useEthers();
     const etherBalance = useEtherBalance(account);
@@ -17,10 +18,10 @@ const Header = () => {
         <Link to='/' id='logo'>NFT Room</Link>
 
         <div id="link-containers">
-          <a>Start Hunting</a>
+          <a onClick={() => navigate("/explore")}>Start Hunting</a>
           <a>Dark NFTs</a>
           <a>Community</a>
-          <a>Craft NFT</a>
+          <a onClick={() => navigate("/create")}>Craft NFT</a>
 
           <button id="connect-wallet" onClick={handleWallet} >{!account ? 'Connect Wallet' : account}</button>
         </div>

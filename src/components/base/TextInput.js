@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import '../../styles/base/TextInput.css';
 
 //Base Input Component
 //Usage: <Input width='550px' height='30px' />
 
-const TextInput = ({width,height, placeholder='default input', icon,type}) => {
+const TextInput = ({width, height, padding="0px", placeholder='default input', icon,type, setValue}) => {
+  // const [value, setValue] = useState("")
+  const handleChange = (e) => {
+    if (type === "file")
+      setValue(e.target.files[0]);
+    else
+      setValue(e.target.value);
+  }
+
+  // useEffect(() => {
+  //     console.log('value: ', value);
+  // }, [value]);
   return (
-    <div className="search-wrapper">
+    <div className="search-wrapper" style={{"padding": padding}}>
       <div
         className="search-container"
         style={{
@@ -20,7 +31,11 @@ const TextInput = ({width,height, placeholder='default input', icon,type}) => {
                 )`,
         }}
       >
-        <input id="search" placeholder={placeholder} type={type}/>
+        {type === "long text" ?
+          <textarea id={"search"} style={{"resize":"none", "border-radius":"0px"}} placeholder={"Description"} onChange={handleChange}/>
+          :
+          <input id="search" placeholder={placeholder} type={type} onChange={handleChange}/>
+        }
         {icon}
       </div>
     </div>
