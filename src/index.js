@@ -11,16 +11,18 @@ import Explore from "./pages/Explore";
 //dapp
 import { DAppProvider } from "@usedapp/core";
 import NFTDetail from "./pages/NFTDetail";
+import { MoralisProvider } from "react-moralis";
 
 ReactDOM.render(
   <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<DAppProvider config={{}}><Home /></DAppProvider>} />
-        <Route path="/create" element={<DAppProvider><Create /></DAppProvider>} />
-        <Route path="/explore" element={<DAppProvider config={{}}><Explore /></DAppProvider>} />
-        <Route path="/detail" element={<DAppProvider config={{}}><NFTDetail /></DAppProvider>} />
-
-      </Routes>
+      <MoralisProvider serverUrl="https://r6bsuhtagkz4.usemoralis.com:2053/server" appId="mHzShlD3IGTeBt5JBo1vKbjFGvdsLBtsId1wrvek">
+        <Routes>
+          <Route path="/" element={<DAppProvider config={{}}><Home /></DAppProvider>} />
+          <Route path="/create" element={<DAppProvider><Create /></DAppProvider>} />
+          <Route path="/explore" element={<DAppProvider config={{}}><Explore /></DAppProvider>} />
+          <Route path="/detail" element={<DAppProvider config={{}}><NFTDetail /></DAppProvider>} />
+        </Routes>
+      </MoralisProvider>
     </BrowserRouter>,
   document.getElementById("root")
 );
