@@ -1,16 +1,31 @@
 import react, { useContext } from "react";
 import { Link } from "react-router-dom";
-import { useEthers, useEtherBalance } from "@usedapp/core";
 import { useNavigate } from "react-router-dom";
+import { useMoralis } from "react-moralis";
+
 const Header = () => {
     let navigate = useNavigate();
 
-    const {activateBrowserWallet, account} = useEthers();
-    const etherBalance = useEtherBalance(account);
 
-    const handleWallet = () => {
-      activateBrowserWallet();
+    const { authenticate, isAuthenticated, isAuthenticating, user, logout } = useMoralis();
 
+    const login = async () => {
+        if (!isAuthenticated) {
+
+            await authenticate({signingMessage: "Log in using Moralis" })
+                .then(function (user) {
+                    console.log("logged in user:", user);
+                    console.log(user.get("ethAddress"));
+                })
+                .catch(function (error) {
+                    console.log(error);
+                });
+        }
+    }
+
+    const logOut = async () => {
+        await logout();
+        console.log("logged out");
     }
 
     return (
@@ -22,8 +37,8 @@ const Header = () => {
           <a>Dark NFTs</a>
           <a>Community</a>
           <a onClick={() => navigate("/create")}>Craft NFT</a>
-
-          <button id="connect-wallet" onClick={handleWallet} >{!account ? 'Connect Wallet' : account}</button>
+          {!isAuthenticated ? null : <a>{"Welcome, " + user.get("ethAddress")}</a> }
+          <button id="connect-wallet" onClick={!isAuthenticated ? login : logOut} >{!isAuthenticated ? 'Connect Wallet' : 'Logout'}</button>
         </div>
       </div>
     );

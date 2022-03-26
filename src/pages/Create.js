@@ -10,7 +10,6 @@ import TextInput from "../components/base/TextInput";
 import { Colors } from "../constants/Colors";
 import {AiFillHeart, AiOutlineHeart, AiOutlineSearch} from 'react-icons/ai';
 import Header from "../components/Header";
-import { useEthers, useEtherBalance } from "@usedapp/core";
 import {ColorExtractor} from "react-color-extractor";
 import {FaEthereum} from "react-icons/fa";
 import React from "react";
@@ -19,12 +18,7 @@ import {useMobile} from "../hooks/isMobile";
 const Create = () => {
   const padding = "5px";
   const isMobile = useMobile();
-  const {activateBrowserWallet, account} = useEthers();
-  const etherBalance = useEtherBalance(account);
 
-  useEffect(()=>{
-    activateBrowserWallet();
-  },[])
 
   const [name, setName] = useState("");
   useEffect(() => {
