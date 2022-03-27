@@ -142,18 +142,18 @@ contract GameNFT is ERC721URIStorage{
         return playerInfo;
     }
 
-    function burn(uint tokenID) public returns (string){
-        delete tokenInfos[tokenID];
-        _burn(tokenID);
-        return tokenID + "has been burned";
-    }
+//    function burn(uint tokenID) public returns (string){
+//        delete tokenInfos[tokenID];
+//        _burn(tokenID);
+//        return tokenID + "has been burned";
+//    }
 
-    function reforge(uint tokenID1, uint tokenID2) public returns (uint){
-        burn(tokenID1);
-        burn(tokenID2);
-        string tokenURI = "Reforged";
-        _tokenType tokenType = _tokenType.GameProp;
-        newTokenID = mintItem(tokenURI, tokenType);
-        return newTokenID;
-    }
+//    function reforge(uint tokenID1, uint tokenID2) public returns (uint){
+//        burn(tokenID1);
+//        burn(tokenID2);
+//        string tokenURI = "Reforged";
+//        _tokenType tokenType = _tokenType.GameProp;
+//        newTokenID = mintItem(tokenURI, tokenType);
+//        return newTokenID;
+//    }
 }
