@@ -40,7 +40,7 @@ contract ArenaGame{
 
         // require(msg.value >= minPrice, "The minimal stake is required");
         // require(gameNFT.ownerOf(player1TokenID) == msg.sender, "This is not your NFT");
-        console.log("");
+//        console.log("");
 
         GameNFT.PlayerInfo memory player1Info = gameNFT.getProperty(player1TokenID);
         GameNFT.PlayerInfo memory player2Info = gameNFT.getProperty(player2TokenID);
