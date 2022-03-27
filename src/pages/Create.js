@@ -14,11 +14,11 @@ import {ColorExtractor} from "react-color-extractor";
 import {FaEthereum} from "react-icons/fa";
 import React from "react";
 import {useMobile} from "../hooks/isMobile";
+import Moralis from "moralis";
 
 const Create = () => {
   const padding = "5px";
   const isMobile = useMobile();
-
 
   const [name, setName] = useState("");
   useEffect(() => {
@@ -40,8 +40,37 @@ const Create = () => {
     console.log('price: ', price);
   }, [price])
 
-  const handleClick = () => {
-    alert("Successfully create! Name: " + name + ", Desc:" + desc);
+  const handleClick = async () => {
+    const img_file = new Moralis.File(name, file);
+    await img_file.saveIPFS();
+    console.log("Uploaded img:", img_file.ipfs(), img_file.hash());
+    const object = {
+      "name" : name,
+      "description": desc,
+      "img": img_file.ipfs()
+    }
+    const nft_file = new Moralis.File(name + ".json", {base64 : btoa(JSON.stringify(object))});
+    await nft_file.saveIPFS();
+    console.log("Uploaded NFT metadata:", nft_file.ipfs(), nft_file.hash());
+
+    const NFT = Moralis.Object.extend("NFT");
+    const nft = new NFT();
+
+    nft.set("name", name);
+    nft.set("description", desc);
+    nft.set("img", img_file.ipfs());
+    nft.set("price", price);
+
+    nft.save()
+        .then((nft) => {
+          // Execute any logic that should take place after the object is saved.
+          console.log("Successfully create! Name: " + name + ", Desc:" + desc);
+          console.log('New object created with objectId: ' + nft.id);
+        }, (error) => {
+          // Execute any logic that should take place if the save fails.
+          // error is a Moralis.Error with an error code and message.
+          alert('Failed to create new object, with error code: ' + error.message);
+        });
   }
 
   return (
