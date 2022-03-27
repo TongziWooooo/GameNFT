@@ -50,9 +50,9 @@ const MyCollection = () => {
   return (
     <div id="my-collection">
       <Header />
-      <Search/>
+      {/*<Search/>*/}
       <div id="list-container" style={{"margin-top": "90px"}}>
-        <CardList list={exploreData} />
+        <CardList list={exploreData} page={"collection"}/>
       </div>
     </div>
   );

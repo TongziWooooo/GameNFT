@@ -38,7 +38,9 @@ const NFTCard = ({
   }
 
 
-
+  const handleChange = (e) => {
+    console.log(e.target.innerText);
+  }
 
 
   return (
@@ -63,16 +65,16 @@ const NFTCard = ({
           </div>
 
           <div className="price-container">
-            <p className="price-label">Price</p>
-            <p className="price">
-              {" "}
-              <FaEthereum /> {price}
+            <p className="price-label">Price{" "}
+              <FaEthereum /></p>
+            <p className="price" contentEditable={"true"} onInput={handleChange}>
+               {price}
             </p>
           </div>
         </div>
         <div className="buttons">
           {/* <button className="buy-now">Buy Now</button> */}
-          <Button color={Colors.buttons.primary} textContent="Buy Now" onClick={onClick} />
+            <Button color={Colors.buttons.primary} textContent="Detail" onClick={onClick} />
           <div className="like-container">
             <button className="like" onClick={handleLike}>
               {!isLike ? (

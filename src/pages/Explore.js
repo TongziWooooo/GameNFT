@@ -51,7 +51,7 @@ const Explore = () => {
       <Header />
       <Search handleQuery={handleQuery} handleClick={handleClick} handleKeyDown={handleKeyDown}/>
       <div id="list-container" style={{"margin-top": "90px"}}>
-        <CardList list={exploreData} />
+        <CardList list={exploreData} page={"explore"}/>
       </div>
     </div>
   );

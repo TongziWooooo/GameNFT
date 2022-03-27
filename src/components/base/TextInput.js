@@ -4,9 +4,9 @@ import '../../styles/base/TextInput.css';
 //Base Input Component
 //Usage: <Input width='550px' height='30px' />
 
-const TextInput = ({width, height, padding="0px", icon, child}) => {
+const TextInput = ({width, height, padding="0px", icon, child, style}) => {
   return (
-    <div className="search-wrapper" style={{"padding": padding}}>
+    <div className="search-wrapper" style={{"padding": padding, ...style}}>
       <div
         className="search-container"
         style={{
