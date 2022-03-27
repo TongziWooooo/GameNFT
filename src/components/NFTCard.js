@@ -13,11 +13,18 @@ import { useARStatus } from "../hooks/isARStatus";
 
 
 
-const NFTCard = ({ username, nftName, price, nftSrc, likeCount, gradient, onClick }) => {
+const NFTCard = ({
+                   username="LEJOURN.DARK.NFT",
+                   name="Alien Cry",
+                   price=4.555,
+                   img,
+                   likeCount=123,
+                   onClick
+}) => {
   const [isLike, setIsLike] = useState(false);
   const [colors, setColors] = useState([]);
 
-  const isARSupport = useARStatus(nftSrc);
+  const isARSupport = useARStatus(img);
 
   useEffect(() => {
     console.log(isARSupport);
@@ -39,20 +46,27 @@ const NFTCard = ({ username, nftName, price, nftSrc, likeCount, gradient, onClic
       blurColor={colors[0]}
 
       child={<>
-        {isARSupport ? <model-viewer ar-scale="auto" ar ar-modes="webxr scene-viewer quick-look" id="reveal" loading="eager" camera-controls auto-rotate src={nftSrc} > </model-viewer> : <><ColorExtractor getColors={getColors}>
-          <img className="nft-image" src={nftSrc} />
-        </ColorExtractor></>}
+        {
+          isARSupport ?
+            <model-viewer ar-scale="auto" ar ar-modes="webxr scene-viewer quick-look" id="reveal" loading="eager" camera-controls auto-rotate src={img} > </model-viewer>
+            :
+            <>
+              <ColorExtractor getColors={getColors}>
+                <img className="nft-image" src={img} />
+              </ColorExtractor>
+            </>
+        }
         <div className="wrapper">
           <div className="info-container">
-            <p className="owner"> LEJOURN.DARK.NFT</p>
-            <p className="name">Alien Cry</p>
+            <p className="owner">{username}</p>
+            <p className="name">{name}</p>
           </div>
 
           <div className="price-container">
             <p className="price-label">Price</p>
             <p className="price">
               {" "}
-              <FaEthereum /> 4.555
+              <FaEthereum /> {price}
             </p>
           </div>
         </div>
@@ -73,7 +87,7 @@ const NFTCard = ({ username, nftName, price, nftSrc, likeCount, gradient, onClic
                 }} color='#00f5c966' />
               )}
             </button>
-            <p className="like-count">123</p>
+            <p className="like-count">{likeCount}</p>
           </div>
         </div>
       </>}>

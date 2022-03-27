@@ -38,7 +38,7 @@ const NFTDetail = () => {
     setColors([]);
   }, [state]);
 
-  const isARSupport = useARStatus(state.item.src);
+  const isARSupport = useARStatus(state.item.img);
 
   
 
@@ -56,9 +56,9 @@ const NFTDetail = () => {
           child={
             //Detail Content
             <div id="detail-content">
-             {isARSupport ? <model-viewer ar-scale="auto" ar ar-modes="webxr scene-viewer quick-look" id="arDetail" loading="eager" camera-controls auto-rotate src={state.item.src} > </model-viewer> 
+             {isARSupport ? <model-viewer ar-scale="auto" ar ar-modes="webxr scene-viewer quick-look" id="arDetail" loading="eager" camera-controls auto-rotate src={state.item.img} > </model-viewer>
              : <> <ColorExtractor getColors={getColors}>
-                <img id="detail-image" src={state.item.src} />
+                <img id="detail-image" src={state.item.img} />
               </ColorExtractor></>}
 
               <div id="detail-info" style={{}}>
@@ -75,11 +75,11 @@ const NFTDetail = () => {
                     height="50px"
                     child={
                       <div id="button-child">
-                        <FaEthereum size="28px" />
-                        <p id="price">1254</p>
+                        <FaEthereum size="28px"/>
+                        <p id="price"> {state.item.price}</p>
                       </div>
                     }
-                  ></Button>
+                  />
                   <div className="like-container">
                     <button className="like" onClick={like}>
                       {!isLike ? (
