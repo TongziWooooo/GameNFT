@@ -19,7 +19,6 @@ const NFTCard = ({
                    price=4.555,
                    img,
                    likeCount=123,
-                   onClick
 }) => {
   const [isLike, setIsLike] = useState(false);
   const [colors, setColors] = useState([]);
@@ -37,8 +36,9 @@ const NFTCard = ({
     //console.log(colors);
   }
 
+  const Buy = async() => {
 
-
+  }
 
 
   return (
@@ -72,7 +72,7 @@ const NFTCard = ({
         </div>
         <div className="buttons">
           {/* <button className="buy-now">Buy Now</button> */}
-          <Button color={Colors.buttons.primary} textContent="Buy Now" onClick={onClick} />
+          <Button color={Colors.buttons.primary} textContent="Buy Now" onClick={Buy} />
           <div className="like-container">
             <button className="like" onClick={like}>
               {!isLike ? (
