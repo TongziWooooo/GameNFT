@@ -7,10 +7,16 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Create from "./pages/Create";
 import Explore from "./pages/Explore";
+import MyCollection from "./pages/MyCollection";
 
 //dapp
 import NFTDetail from "./pages/NFTDetail";
 import { MoralisProvider } from "react-moralis";
+import Moralis from "moralis";
+
+const serverUrl = "https://r6bsuhtagkz4.usemoralis.com:2053/server";
+const appId = "mHzShlD3IGTeBt5JBo1vKbjFGvdsLBtsId1wrvek";
+Moralis.start({ serverUrl, appId });
 
 ReactDOM.render(
   <BrowserRouter>
@@ -18,6 +24,7 @@ ReactDOM.render(
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/create" element={<Create />} />
+          <Route path="/collection" element={<MyCollection />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/detail" element={<NFTDetail />} />
         </Routes>

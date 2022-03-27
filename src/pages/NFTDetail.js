@@ -63,8 +63,8 @@ const NFTDetail = () => {
 
               <div id="detail-info" style={{}}>
                 <div id='detail-info-container'>
-                  <p id="collection"> {state.item.name} </p>
                   <p id="name"> {state.item.name} </p>
+                  <p id="collection"> {state.item.tokenType === 1 ? "Artwork" : "Game Prop"} </p>
                   <p id="description" > {state.item.description} </p>
 
                 </div>
@@ -98,7 +98,7 @@ const NFTDetail = () => {
                         />
                       )}
                     </button>
-                    <p className="like-count">123</p>
+                    <p className="like-count">{state.item.like}</p>
                   </div>
                 </div>
               </div>

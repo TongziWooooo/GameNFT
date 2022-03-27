@@ -16,7 +16,6 @@ import React from "react";
 import {useMobile} from "../hooks/isMobile";
 
 import Moralis from "moralis";
-import login from "../components/Header"
 import GameNFT from '../artifacts/contracts/GameNFT.sol/GameNFT.json'
 import {ethers} from "ethers";
 import {useMoralis} from "react-moralis";
@@ -72,19 +71,22 @@ const Create = () => {
     return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  const { authenticate, isAuthenticated, isAuthenticating, user, logout } = useMoralis();
+  const { authenticate, isAuthenticated, isAuthenticating, user} = useMoralis();
   const handleClick = async () => {
     // require login
-    if (!user) {
-      if (typeof window.ethereum !== 'undefined') {
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-      }
+    let current_user = user
+    console.log(current_user)
+    if (!isAuthenticated) {
+      await authenticate().then(function (user) {
+        console.log(user.get('ethAddress'))
+        current_user = user
+        console.log(current_user)
+      })
     }
-    const user_address = user.get("ethAddress")
+    const user_address = current_user.get("ethAddress")
     console.log("User:", user_address)
 
     // check fields
-    const tokenType = 0;
     if (!name || !desc || !file || !price) {
       alert("Please fill every input!");
       return
@@ -125,6 +127,9 @@ const Create = () => {
     const tokenURI = nft_file.ipfs();
 
     // send transaction in blockchain
+    if (typeof window.ethereum !== 'undefined') {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    }
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner()
     const contract = new ethers.Contract(gameNFTAddress, GameNFT.abi, signer)
@@ -138,12 +143,14 @@ const Create = () => {
 
     nft.set("name", name);
     nft.set("description", desc);
-    nft.set("img", tokenURI);
+    nft.set("img", img_file.ipfs());
     nft.set("tokenType", tokenType)
     nft.set("attributes", attributes);
     nft.set("tokenURI", tokenURI);
     nft.set("owner", user_address);
     nft.set("tokenID", transaction);
+    nft.set("isListed", false);
+    nft.set("isSold", false);
     nft.set("price", price);
     nft.set("like", 0);
 
@@ -175,12 +182,12 @@ const Create = () => {
                   <TextInput type={"radio"} height={"60px"} setValue={setTokenType} padding={padding} child={
                     <div>
                       <label className="container" style={{"font-size": "20px"}}>
-                        {"artwork"}
+                        {"Artwork"}
                         <input type="radio" onChange={handleTokenType} value={"artwork"} name={"tokentype"} defaultChecked/>
                         <span className="checkmark"/>
                       </label>
                       <label className="container" style={{"font-size": "20px"}}>
-                        {"game prop"}
+                        {"Game Prop"}
                         <input type="radio" onChange={handleTokenType} value={"game prop"} name={"tokentype"}/>
                         <span className="checkmark"/>
                       </label>
@@ -206,7 +213,6 @@ const Create = () => {
                     color={Colors.buttons.succes}
                     onClick={handleClick}
                   />
-
                 </div>
               </div>
 

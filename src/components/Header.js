@@ -29,16 +29,16 @@ const Header = () => {
     }
 
     return (
-        <div id="header">
+        <div id="header" style={{"position": "fixed"}}>
         <Link to='/' id='logo'>NFT Room</Link>
 
         <div id="link-containers">
           <a onClick={() => navigate("/explore")}>Start Hunting</a>
           <a>Dark NFTs</a>
-          <a>Community</a>
+          <a onClick={() => navigate("/collection")}>My Collection</a>
           <a onClick={() => navigate("/create")}>Craft NFT</a>
           {!isAuthenticated ? null : <a>{"Welcome, " + user.get("ethAddress")}</a> }
-          <button id="connect-wallet" onClick={!isAuthenticated ? login : logOut} >{!isAuthenticated ? 'Connect Wallet' : 'Logout'}</button>
+          <button id="connect-wallet" onClick={!isAuthenticated ? login : logOut}  disabled={isAuthenticating}>{!isAuthenticated ? 'Connect Wallet' : 'Logout'}</button>
         </div>
       </div>
     );

@@ -14,11 +14,11 @@ import { useARStatus } from "../hooks/isARStatus";
 
 
 const NFTCard = ({
-                   username="LEJOURN.DARK.NFT",
-                   name="Alien Cry",
-                   price=4.555,
+                   tokenType,
+                   name,
+                   price,
                    img,
-                   likeCount=123,
+                   like,
                    onClick
 }) => {
   const [isLike, setIsLike] = useState(false);
@@ -30,7 +30,7 @@ const NFTCard = ({
     console.log(isARSupport);
   }, [])
 
-  const like = () => setIsLike(!isLike);
+  const handleLike = () => setIsLike(!isLike);
 
   const getColors = colors => {
     setColors(c => [...c, ...colors]);
@@ -58,7 +58,7 @@ const NFTCard = ({
         }
         <div className="wrapper">
           <div className="info-container">
-            <p className="owner">{username}</p>
+            <p className="owner">{tokenType === 1 ? "Artwork" : "Game Prop"}</p>
             <p className="name">{name}</p>
           </div>
 
@@ -74,7 +74,7 @@ const NFTCard = ({
           {/* <button className="buy-now">Buy Now</button> */}
           <Button color={Colors.buttons.primary} textContent="Buy Now" onClick={onClick} />
           <div className="like-container">
-            <button className="like" onClick={like}>
+            <button className="like" onClick={handleLike}>
               {!isLike ? (
                 <AiOutlineHeart size="30" color="white" />
               ) : (
@@ -87,7 +87,7 @@ const NFTCard = ({
                 }} color='#00f5c966' />
               )}
             </button>
-            <p className="like-count">{likeCount}</p>
+            <p className="like-count">{like}</p>
           </div>
         </div>
       </>}>
