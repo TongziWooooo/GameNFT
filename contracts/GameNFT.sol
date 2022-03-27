@@ -3,6 +3,8 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
+import "hardhat/console.sol";
+
 
 contract GameNFT is ERC721URIStorage{
     using Counters for Counters.Counter;
@@ -61,6 +63,7 @@ contract GameNFT is ERC721URIStorage{
 
         tokenInfos[newTokenId] = NFTInfo(newTokenId, tokenURI, user, tokenTypeInput);
 
+        setApprovalForAll(mkplaceAddress, true);
         return newTokenId;
     }
 
@@ -111,22 +114,30 @@ contract GameNFT is ERC721URIStorage{
         return randomNum % _mod;
     }
 
-    function transferItem(address to, uint itemID) public{
+    function transferItem(address from, address to, uint itemID) public{
         // If stored in blockchain, Use storage, else use memory
-        uint[] memory itemsID = addr2ItemID(msg.sender);
-        address owner = ownerOf(itemID);
-
-        // To check if user = msg.sender has this itemID
-        bool isExist = owner == msg.sender;
-
-        require(isExist, "Account should have this Item");
-
-        // Update the item list in the database, both msg.sender & to
-
-
         // transferMessage broadcast, API in ERC721
-        transferFrom(msg.sender, to, itemID);
+        transferFrom(from, to, itemID);
+        // Update the item list in the database, both msg.sender & to
+        NFTInfo storage tmp = tokenInfos[itemID];
+        tmp.owner = to;
     }
+
+//    function transferItem(address to, uint itemID) public{
+//        // If stored in blockchain, Use storage, else use memory
+//        uint[] memory itemsID = addr2ItemID(msg.sender);
+//        address owner = ownerOf(itemID);
+//
+//        // To check if user = msg.sender has this itemID
+//        bool isExist = owner == msg.sender;
+//
+//        require(isExist, "Account should have this Item");
+//
+//        // Update the item list in the database, both msg.sender & to
+//
+//        // transferMessage broadcast, API in ERC721
+//        transferFrom(msg.sender, to, itemID);
+//    }
 
     function getProperty(uint tokenID) public view returns (PlayerInfo memory){
         _tokenType tokenType = tokenInfos[tokenID].tokenType;
@@ -142,18 +153,18 @@ contract GameNFT is ERC721URIStorage{
         return playerInfo;
     }
 
-//    function burn(uint tokenID) public returns (string){
-//        delete tokenInfos[tokenID];
-//        _burn(tokenID);
-//        return tokenID + "has been burned";
-//    }
+    function burn(uint tokenID) public returns (uint){
+        delete tokenInfos[tokenID];
+        _burn(tokenID);
+        return tokenID;
+    }
 
-//    function reforge(uint tokenID1, uint tokenID2) public returns (uint){
-//        burn(tokenID1);
-//        burn(tokenID2);
-//        string tokenURI = "Reforged";
-//        _tokenType tokenType = _tokenType.GameProp;
-//        newTokenID = mintItem(tokenURI, tokenType);
-//        return newTokenID;
-//    }
+    function reforge(uint tokenID1, uint tokenID2) public returns (uint){
+        burn(tokenID1);
+        burn(tokenID2);
+        string memory tokenURI = "Reforged";
+        _tokenType tokenType = _tokenType.GameProp;
+        uint newTokenID = mintItem(tokenURI, tokenType);
+        return newTokenID;
+    }
 }

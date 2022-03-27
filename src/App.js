@@ -30,17 +30,22 @@ import { ethers } from 'ethers'
 import Greeter from './artifacts/contracts/Greeter.sol/Greeter.json'
 import GameNFT from './artifacts/contracts/GameNFT.sol/GameNFT.json'
 import ArenaGame from './artifacts/contracts/ArenaGame.sol/ArenaGame.json'
+import Marketplace from './artifacts/contracts/Marketplace.sol/Marketplace.json'
 
 // Update with the contract address logged out to the CLI when it was deployed
 // const greeterAddress = "your-contract-address"
 const greeterAddress = "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49"
-const gameNFTAddress = "0xcbEAF3BDe82155F56486Fb5a1072cb8baAf547cc"
+const gameNFTAddress = "0x967AB65ef14c58bD4DcfFeaAA1ADb40a022140E5"
 const arenaGameAddress = "0x4631BCAbD6dF18D94796344963cB60d44a4136b6"
+const marketplaceAddress = "0xc7cDb7A2E5dDa1B7A0E792Fe1ef08ED20A6F56D4"
+
 function App() {
   // store greeting in local state
   const [greeting, setGreetingValue] = useState()
   const [yourTokenID, setYourTokenID] = useState()
   const [adversaryTokenID, setAdversaryTokenID] = useState()
+  const [marketTokenID, setMarketTokenID] = useState()
+  const [marketItemID, setMarketItemID] = useState()
 
   // request access to the user's MetaMask account
   async function requestAccount() {
@@ -116,8 +121,47 @@ function App() {
     }
   }
 
-  async function burnNFT() {
+  async function createMarketItem() {
+    await requestAccount()
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, signer)
+      try {
+        const data = await contract.createMarketItem(gameNFTAddress, marketTokenID, 1)
+        console.log('data: ', data)
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }
+  }
 
+  async function fetchUnsoldItems() {
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, provider)
+      try {
+        const data = await contract.fetchUnsoldItems()
+        console.log('data: ', data)
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }
+  }
+
+  async function buyItem() {
+    await requestAccount()
+    if (typeof window.ethereum !== 'undefined') {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+      const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, signer)
+      try {
+        const data = await contract.buyItem(gameNFTAddress, marketItemID)
+        console.log('data: ', data)
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }
   }
 
   async function createGame() {
@@ -150,6 +194,11 @@ function App() {
           <input onChange={e => setYourTokenID(e.target.value)} placeholder="Your Token ID"/>
           <input onChange={e => setAdversaryTokenID(e.target.value)} placeholder="Adversary Token ID"/>
           <button onClick={createGame}>Create Game</button>
+          <input onChange={e => setMarketTokenID(e.target.value)} placeholder="Token ID to sell"/>
+          <button onClick={createMarketItem}>Create Market Item</button>
+          <button onClick={fetchUnsoldItems}>Fetch All Unsold Items in the Market</button>
+          <input onChange={e => setMarketItemID(e.target.value)} placeholder="Item ID to buy"/>
+          <button onClick={buyItem}>But by Item ID</button>
         </header>
       </div>
   );

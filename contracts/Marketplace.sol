@@ -3,6 +3,9 @@ pragma solidity ^0.8.10;
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "./GameNFT.sol";
+import "hardhat/console.sol";
 
 contract Marketplace is ReentrancyGuard{
     using Counters for Counters.Counter;
@@ -50,7 +53,7 @@ contract Marketplace is ReentrancyGuard{
     function createMarketItem(address nftContract, uint tokenID,
         uint price) public payable nonReentrant {
         require(price > 0, "The price should be > 0");
-        require(msg.value == shelfPrice, "Value must equal to shelfPrice");
+        // require(msg.value == shelfPrice, "Value must equal to shelfPrice");
 
         _itemID.increment();
         uint itemID = _itemID.current();
@@ -67,7 +70,9 @@ contract Marketplace is ReentrancyGuard{
         );
 
         // Convert to ERC721 and then transfer from sender to server.
-        IERC721(nftContract).transferFrom(msg.sender, address(this), tokenID);
+
+        GameNFT(nftContract).transferItem(msg.sender, address(this), tokenID);
+        // ERC721(nftContract).transferFrom(msg.sender, address(this), tokenID);
 
         emit MarketItemCreated(
             itemID,
@@ -81,17 +86,20 @@ contract Marketplace is ReentrancyGuard{
     }
 
     //
-    function sellItem(address nftContract, uint itemID) public payable nonReentrant{
+    function buyItem(address nftContract, uint itemID) public payable nonReentrant{
         uint price = idToMarketItem[itemID].price;
         uint tokenID = idToMarketItem[itemID].tokenID;
-        require(msg.value == price, "Please pay the asking price");
+        // require(msg.value == price, "Please pay the asking price");
 
+        // Transfer Item to msg.sender
+        GameNFT(nftContract).transferItem(address(this), msg.sender, tokenID);
         // Transfer money to seller
         idToMarketItem[itemID].seller.transfer(msg.value);
-        // Transfer Item to msg.sender
-        IERC721(nftContract).transferFrom(address(this), msg.sender, tokenID);
-        idToMarketItem[itemID].owner = payable(msg.sender);
-        idToMarketItem[itemID].isSold = true;
+
+        MarketItem storage tmp = idToMarketItem[itemID];
+
+        tmp.owner = payable(msg.sender);
+        tmp.isSold = true;
         _itemSold.increment();
     }
 

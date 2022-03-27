@@ -1,6 +1,7 @@
 pragma solidity ^0.8.10;
 
 import "./GameNFT.sol";
+import "hardhat/console.sol";
 
 contract ArenaGame{
     uint constant gameFee = 0.005 ether;
