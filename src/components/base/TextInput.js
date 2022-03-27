@@ -34,7 +34,21 @@ const TextInput = ({width, height, padding="0px", placeholder='default input', i
         {type === "long text" ?
           <textarea id={"search"} style={{"resize":"none", "border-radius":"0px"}} placeholder={"Description"} onChange={handleChange}/>
           :
-          <input id="search" placeholder={placeholder} type={type} onChange={handleChange}/>
+          type === "radio" ?
+            <div>
+              <label className="container" style={{"font-size": "20px"}}>
+                {"artwork"}
+                <input type="radio" onChange={handleChange} value={"artwork"} name={"tokentype"}/>
+                <span className="checkmark"/>
+              </label>
+              <label className="container" style={{"font-size": "20px"}}>
+                {"weapon(game)"}
+                <input type="radio" onChange={handleChange} value={"weapon"} name={"tokentype"}/>
+                <span className="checkmark"/>
+              </label>
+            </div>
+            :
+            <input id="search" placeholder={placeholder} type={type} onChange={handleChange}/>
         }
         {icon}
       </div>

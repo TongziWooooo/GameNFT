@@ -40,6 +40,11 @@ const Create = () => {
     console.log('price: ', price);
   }, [price])
 
+  const [tokenType, setTokenType] = useState();
+  useEffect(() => {
+    console.log('tokenType: ', tokenType);
+  }, [tokenType])
+
   const handleClick = async () => {
     const img_file = new Moralis.File(name, file);
     await img_file.saveIPFS();
@@ -79,13 +84,14 @@ const Create = () => {
       <div id="nft-detail-card-wrapper">
         <Card
           width={isMobile ? "100%" : "65vw"}
-          height={isMobile ? "700px" : "65vh"}
+          height={isMobile ? "700px" : "75vh"}
           child={
             //Detail Content
             <div id="detail-content">
 
               <div id="detail-info" style={{"text-align": "center", "justify-content": "center", "width": "100%"}}>
                 <div id='detail-info-container'>
+                  <TextInput type={"radio"} height={"60px"} setValue={setTokenType} padding={padding}/>
                   <TextInput placeholder={"Name"} setValue={setName} padding={padding}/>
                   <TextInput placeholder={"Description"} height={"300px"} setValue={setDesc} type={"long text"} padding={padding}/>
                   <TextInput type={"file"} padding={padding} setValue={setFile}/>
