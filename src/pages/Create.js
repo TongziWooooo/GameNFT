@@ -16,7 +16,6 @@ import React from "react";
 import {useMobile} from "../hooks/isMobile";
 
 import Moralis from "moralis";
-import login from "../components/Header"
 import GameNFT from '../artifacts/contracts/GameNFT.sol/GameNFT.json'
 import {ethers} from "ethers";
 import {useMoralis} from "react-moralis";
@@ -167,20 +166,6 @@ const Create = () => {
         });
   }
 
-  const test_user = async () => {
-    // require login
-    let current_user = user
-    if (!current_user) {
-      await authenticate().then(function (user) {
-        console.log(user.get('ethAddress'))
-        current_user = user
-        console.log(current_user)
-      })
-    }
-    const user_address = current_user.get("ethAddress")
-    console.log("User:", user_address)
-  }
-
   return (
     <>
       <Header />
@@ -228,7 +213,6 @@ const Create = () => {
                     color={Colors.buttons.succes}
                     onClick={handleClick}
                   />
-                  <Button textContent="test" onClick={test_user}></Button>
                 </div>
               </div>
 
