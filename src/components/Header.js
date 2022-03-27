@@ -29,7 +29,7 @@ const Header = () => {
     }
 
     return (
-        <div id="header">
+        <div id="header" style={{"position": "fixed"}}>
         <Link to='/' id='logo'>NFT Room</Link>
 
         <div id="link-containers">

@@ -11,6 +11,11 @@ import Explore from "./pages/Explore";
 //dapp
 import NFTDetail from "./pages/NFTDetail";
 import { MoralisProvider } from "react-moralis";
+import Moralis from "moralis";
+
+const serverUrl = "https://r6bsuhtagkz4.usemoralis.com:2053/server";
+const appId = "mHzShlD3IGTeBt5JBo1vKbjFGvdsLBtsId1wrvek";
+Moralis.start({ serverUrl, appId });
 
 ReactDOM.render(
   <BrowserRouter>

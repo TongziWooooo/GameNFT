@@ -9,13 +9,14 @@ import Moralis from "moralis";
 
 
 const Explore = () => {
+  const NFT = Moralis.Object.extend("NFT");
+  const agent = new Moralis.Query(NFT);
 
   const [exploreData, setExploreData] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
-      const NFT = Moralis.Object.extend("NFT");
-      const query = new Moralis.Query(NFT);
-      const results = await query.find();
+
+      const results = await agent.find();
       const parsed_results = results.map((item) => (
         item.attributes
       ))
@@ -29,7 +30,7 @@ const Explore = () => {
     <div id="explore">
       <Header />
       <Search/>
-      <div id="list-container">
+      <div id="list-container" style={{"margin-top": "90px"}}>
         <CardList list={exploreData} />
       </div>
     </div>
