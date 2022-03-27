@@ -9,6 +9,8 @@ const TextInput = ({width, height, padding="0px", placeholder='default input', i
   const handleChange = (e) => {
     if (type === "file")
       setValue(e.target.files[0]);
+    else if (type === "radio")
+      e.target.value === "artwork" ? setValue(1) : setValue(0);
     else
       setValue(e.target.value);
   }
@@ -38,7 +40,7 @@ const TextInput = ({width, height, padding="0px", placeholder='default input', i
             <div>
               <label className="container" style={{"font-size": "20px"}}>
                 {"artwork"}
-                <input type="radio" onChange={handleChange} value={"artwork"} name={"tokentype"}/>
+                <input type="radio" onChange={handleChange} value={"artwork"} name={"tokentype"} defaultChecked/>
                 <span className="checkmark"/>
               </label>
               <label className="container" style={{"font-size": "20px"}}>

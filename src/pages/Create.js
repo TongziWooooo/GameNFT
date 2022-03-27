@@ -40,7 +40,7 @@ const Create = () => {
     console.log('price: ', price);
   }, [price])
 
-  const [tokenType, setTokenType] = useState();
+  const [tokenType, setTokenType] = useState(1);
   useEffect(() => {
     console.log('tokenType: ', tokenType);
   }, [tokenType])
