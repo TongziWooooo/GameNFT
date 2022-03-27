@@ -9,7 +9,13 @@ const CardList = ({ list,type="horizontal" }) => {
   return (
     <div id="card-list" style={{flexDirection:type=="horizontal" ? "row" : "column"}}>
       {list.map((item,index) => (
-        <NFTCard nftSrc={item.src} key={index} onClick={()=>navigate('/detail',{state:{item:item}})}/>
+        <NFTCard
+          // nftSrc={item.src}
+          {...item}
+          // TODO: add more attribute
+          key={index}
+          onClick={()=>navigate('/detail',{state:{item:item}})}
+        />
       ))}
     </div>
   );
