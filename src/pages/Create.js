@@ -30,26 +30,41 @@ const Create = () => {
   useEffect(() => {
     console.log('name: ', name);
   }, [name])
+  const handleName = (e) => {
+    setName(e.target.value);
+  }
 
   const [desc, setDesc] = useState("");
   useEffect(() => {
     console.log('desc: ', desc);
   }, [desc])
+  const handleDesc = (e) => {
+    setDesc(e.target.value);
+  }
 
   const [file, setFile] = useState();
   useEffect(() => {
     console.log('file: ', file);
   }, [file])
+  const handleFile = (e) => {
+    setFile(e.target.files[0]);
+  }
 
   const [price, setPrice] = useState();
   useEffect(() => {
     console.log('price: ', price);
   }, [price])
+  const handlePrice = (e) => {
+    setPrice(e.target.value);
+  }
 
   const [tokenType, setTokenType] = useState(1);
   useEffect(() => {
     console.log('tokenType: ', tokenType);
   }, [tokenType])
+  const handleTokenType = (e) => {
+    e.target.value === "artwork" ? setTokenType(1) : setTokenType(0);
+  }
 
   function getRandomInt(min, max) {
     min = Math.ceil(min);
@@ -157,11 +172,32 @@ const Create = () => {
 
               <div id="detail-info" style={{"text-align": "center", "justify-content": "center", "width": "100%"}}>
                 <div id='detail-info-container'>
-                  <TextInput type={"radio"} height={"60px"} setValue={setTokenType} padding={padding}/>
-                  <TextInput placeholder={"Name"} setValue={setName} padding={padding}/>
-                  <TextInput placeholder={"Description"} height={"300px"} setValue={setDesc} type={"long text"} padding={padding}/>
-                  <TextInput type={"file"} padding={padding} setValue={setFile}/>
-                  <TextInput placeholder={"Price"} padding={padding} setValue={setPrice}/>
+                  <TextInput type={"radio"} height={"60px"} setValue={setTokenType} padding={padding} child={
+                    <div>
+                      <label className="container" style={{"font-size": "20px"}}>
+                        {"artwork"}
+                        <input type="radio" onChange={handleTokenType} value={"artwork"} name={"tokentype"} defaultChecked/>
+                        <span className="checkmark"/>
+                      </label>
+                      <label className="container" style={{"font-size": "20px"}}>
+                        {"game prop"}
+                        <input type="radio" onChange={handleTokenType} value={"game prop"} name={"tokentype"}/>
+                        <span className="checkmark"/>
+                      </label>
+                    </div>
+                  }/>
+                  <TextInput padding={padding} child={
+                    <input id="search" placeholder={"Name"} onChange={handleName}/>
+                  }/>
+                  <TextInput height={"300px"} padding={padding} child={
+                    <textarea id="search" style={{"resize":"none", "border-radius":"0px"}} placeholder={"Description"} onChange={handleDesc}/>
+                  }/>
+                  <TextInput padding={padding} child={
+                    <input id="search" type="file" onChange={handleFile}/>
+                  }/>
+                  <TextInput padding={padding} child={
+                    <input id="search" placeholder={"Price"} onChange={handlePrice}/>
+                  }/>
                   <Button
                     width="20%"
                     height="40px"
