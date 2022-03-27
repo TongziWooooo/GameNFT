@@ -175,12 +175,12 @@ const Create = () => {
                   <TextInput type={"radio"} height={"60px"} setValue={setTokenType} padding={padding} child={
                     <div>
                       <label className="container" style={{"font-size": "20px"}}>
-                        {"artwork"}
+                        {"Artwork"}
                         <input type="radio" onChange={handleTokenType} value={"artwork"} name={"tokentype"} defaultChecked/>
                         <span className="checkmark"/>
                       </label>
                       <label className="container" style={{"font-size": "20px"}}>
-                        {"game prop"}
+                        {"Game Prop"}
                         <input type="radio" onChange={handleTokenType} value={"game prop"} name={"tokentype"}/>
                         <span className="checkmark"/>
                       </label>
