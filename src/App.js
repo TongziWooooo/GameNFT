@@ -35,9 +35,9 @@ import Marketplace from './artifacts/contracts/Marketplace.sol/Marketplace.json'
 // Update with the contract address logged out to the CLI when it was deployed
 // const greeterAddress = "your-contract-address"
 const greeterAddress = "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49"
-const gameNFTAddress = "0x7C8BaafA542c57fF9B2B90612bf8aB9E86e22C09"
+const gameNFTAddress = "0x742489F22807ebB4C36ca6cD95c3e1C044B7B6c8"
 const arenaGameAddress = "0x4631BCAbD6dF18D94796344963cB60d44a4136b6"
-const marketplaceAddress = "0x547382C0D1b23f707918D3c83A77317B71Aa8470"
+const marketplaceAddress = "0x666D0c3da3dBc946D5128D06115bb4eed4595580"
 
 function App() {
   // store greeting in local state
@@ -88,7 +88,14 @@ function App() {
       const signer = provider.getSigner()
       const contract = new ethers.Contract(gameNFTAddress, GameNFT.abi, signer)
       const transaction = await contract.mintItem("https://www.google.com", 0)
-      await transaction.wait()
+      const rc = await transaction.wait()
+      const event = rc.events.find(event => event.event === "NFTCreated")
+      const [q,w,e,c] = event.args
+      console.log("q", q)
+      console.log("w", w)
+      console.log("e", e)
+      console.log("c", c)
+      console.log("args", event.args)
       console.log(transaction)
     }
   }
@@ -127,6 +134,7 @@ function App() {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
       const signer = provider.getSigner()
       const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, signer)
+
       try {
         const data = await contract.createMarketItem(gameNFTAddress, marketTokenID,
             ethers.utils.parseEther("1"),

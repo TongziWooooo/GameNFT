@@ -24,6 +24,13 @@ contract GameNFT is ERC721URIStorage{
         _tokenType tokenType;
     }
 
+    event NFTCreated (
+        uint indexed tokenID,
+        string indexed tokenURI,
+        address indexed owner,
+        _tokenType tokenType
+    );
+
     struct PlayerInfo{
         uint attack;
         uint speed;
@@ -59,6 +66,14 @@ contract GameNFT is ERC721URIStorage{
         tokenInfos[newTokenId] = NFTInfo(newTokenId, tokenURI, user, tokenTypeInput);
 
         setApprovalForAll(mkplaceAddress, true);
+
+        emit NFTCreated(
+            newTokenId,
+            tokenURI,
+            user,
+            tokenTypeInput
+        );
+
         return newTokenId;
     }
 

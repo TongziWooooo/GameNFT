@@ -49,10 +49,7 @@ contract ArenaGame{
     function fight(HeroInfo memory hero1Info, HeroInfo memory hero2Info)
         public view returns (_ResultType, string[] memory){
 
-
-
         string[] memory resultLog = new string[](10);
-
 
         return (_ResultType.Win, resultLog);
     }

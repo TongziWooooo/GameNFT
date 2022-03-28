@@ -27,6 +27,7 @@ ReactDOM.render(
           <Route path="/collection" element={<MyCollection />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/detail" element={<NFTDetail />} />
+          <Route path="/test" element={<App />} />
         </Routes>
       </MoralisProvider>
     </BrowserRouter>,
