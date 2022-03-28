@@ -37,11 +37,6 @@ contract GameNFT is ERC721URIStorage{
         mkplaceAddress = marketplaceAddress;
     }
 
-    // constructor(address marketplaceAddress, unit tokenTypeInput) ERC721("Equipment", "ITEM"){
-    //     mkplaceAddress = marketplaceAddress;
-    //     tokenType = tokenTypeInput;
-    // }
-
     function mintItem(string memory tokenURI, _tokenType tokenTypeInput) public returns (uint){
         address user = msg.sender;
 

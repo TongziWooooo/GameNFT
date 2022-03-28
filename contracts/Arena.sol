@@ -11,19 +11,57 @@ contract Arena {
     address payable Player;
     uint _trophyPrice = 0.01 ether;
 
+    address[] arenaPlayerAddress;
+    mapping(address => ArenaPlayer) arenaPlayers;
+
     constructor(){
     }
 
-    event arenaPlayerCreated (
-        address indexed player,
-        uint indexed tokenID,
-        uint indexed itemID,
+    struct ArenaPlayer{
+        uint playerNum;
+        uint[3] tokenTeam;
+        address nftContract;
+    }
+
+    event ArenaPlayerCreated (
+        uint indexed playerNum,
+        uint[3] indexed tokenTeam,
         address nftContract
     );
 
-    function createPlayer(address nftContract, uint tokenID) public payable{
-        require(msg.value >= _trophyPrice, "You have to pay for Arena Ticket");
-        uint randDNA = _createRandomNum(10 ** 10);
+    function createPlayer(address nftContract, uint[3] memory tokenTeam) public payable{
+        // require(msg.value >= _trophyPrice, "You have to pay for Arena Ticket");
+        _playerNum.increment();
+        uint playerNum = _playerNum.current();
+        address playerAddress = msg.sender;
+
+        arenaPlayerAddress.push(playerAddress);
+
+        arenaPlayers[playerAddress] = ArenaPlayer(
+            playerNum,
+            tokenTeam,
+            nftContract
+        );
+
+        emit ArenaPlayerCreated(
+            playerNum,
+            tokenTeam,
+            nftContract
+        );
+    }
+
+    function fetchAllPlayer() public view returns(ArenaPlayer[] memory){
+        uint leftPlayerNum = arenaPlayerAddress.length;
+        ArenaPlayer[] memory playerList = new ArenaPlayer[](leftPlayerNum);
+        for(uint i = 0; i < leftPlayerNum; i++){
+            playerList[i] = arenaPlayers[arenaPlayerAddress[i]];
+        }
+
+        return playerList;
+    }
+
+    function quitArena() public{
+
     }
 
     function _createRandomNum(uint256 _mod) internal view returns (uint256) {

@@ -35,9 +35,9 @@ import Marketplace from './artifacts/contracts/Marketplace.sol/Marketplace.json'
 // Update with the contract address logged out to the CLI when it was deployed
 // const greeterAddress = "your-contract-address"
 const greeterAddress = "0x70e0bA845a1A0F2DA3359C97E0285013525FFC49"
-const gameNFTAddress = "0x967AB65ef14c58bD4DcfFeaAA1ADb40a022140E5"
+const gameNFTAddress = "0x7C8BaafA542c57fF9B2B90612bf8aB9E86e22C09"
 const arenaGameAddress = "0x4631BCAbD6dF18D94796344963cB60d44a4136b6"
-const marketplaceAddress = "0xc7cDb7A2E5dDa1B7A0E792Fe1ef08ED20A6F56D4"
+const marketplaceAddress = "0x547382C0D1b23f707918D3c83A77317B71Aa8470"
 
 function App() {
   // store greeting in local state
@@ -128,7 +128,9 @@ function App() {
       const signer = provider.getSigner()
       const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, signer)
       try {
-        const data = await contract.createMarketItem(gameNFTAddress, marketTokenID, 1)
+        const data = await contract.createMarketItem(gameNFTAddress, marketTokenID,
+            ethers.utils.parseEther("1"),
+            { value: ethers.utils.parseEther("2") })
         console.log('data: ', data)
       } catch (err) {
         console.log("Error: ", err)
@@ -156,7 +158,8 @@ function App() {
       const signer = provider.getSigner()
       const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, signer)
       try {
-        const data = await contract.buyItem(gameNFTAddress, marketItemID)
+        const data = await contract.buyItem(gameNFTAddress, marketItemID,
+            {value: ethers.utils.parseEther("1")})
         console.log('data: ', data)
       } catch (err) {
         console.log("Error: ", err)

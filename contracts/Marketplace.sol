@@ -52,6 +52,7 @@ contract Marketplace is ReentrancyGuard{
     // nonReentrant Prevents a contract from calling itself, directly or indirectly.
     function createMarketItem(address nftContract, uint tokenID,
         uint price) public payable nonReentrant {
+        console.log(msg.value);
         require(price > 0, "The price should be > 0");
         // require(msg.value == shelfPrice, "Value must equal to shelfPrice");
 
@@ -94,7 +95,11 @@ contract Marketplace is ReentrancyGuard{
         // Transfer Item to msg.sender
         GameNFT(nftContract).transferItem(address(this), msg.sender, tokenID);
         // Transfer money to seller
-        idToMarketItem[itemID].seller.transfer(msg.value);
+        console.log("before transfer money");
+        // idToMarketItem[itemID].seller.transfer(msg.value);
+        (bool success, ) = idToMarketItem[itemID].seller.call{value: msg.value}("");
+        console.log(success);
+        console.log("after transfer money");
 
         MarketItem storage tmp = idToMarketItem[itemID];
 
