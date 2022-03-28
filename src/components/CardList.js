@@ -3,7 +3,7 @@ import NFTCard from "./NFTCard";
 import "../styles/CardList.css";
 import { useNavigate } from "react-router-dom";
 
-const CardList = ({ list,type="horizontal" }) => {
+const CardList = ({ list,type="horizontal", page}) => {
   let navigate = useNavigate();
 
   return (
@@ -12,9 +12,8 @@ const CardList = ({ list,type="horizontal" }) => {
         <NFTCard
           // nftSrc={item.src}
           {...item}
-          // TODO: add more attribute
           key={index}
-          onClick={()=>navigate('/detail',{state:{item:item}})}
+          onClick={()=>navigate('/detail',{state:{item:item, page:page}})}
         />
       ))}
     </div>

@@ -9,7 +9,6 @@ import {useMoralis} from "react-moralis";
 
 const MyCollection = () => {
   const NFT = Moralis.Object.extend("NFT");
-  const agent = new Moralis.Query(NFT);
 
   const [exploreData, setExploreData] = useState([]);
   const { authenticate, isAuthenticated, isAuthenticating, user} = useMoralis();
@@ -25,7 +24,8 @@ const MyCollection = () => {
       // require login
       let current_user = user
       console.log(current_user)
-      if (!isAuthenticated) {
+      console.log(isAuthenticated)
+      if (!isAuthenticating && !isAuthenticated) {
         setExploreData([]);
         await authenticate().then(function (user) {
           console.log(user.get('ethAddress'))
@@ -36,7 +36,7 @@ const MyCollection = () => {
       else {
         const query = new Moralis.Query(NFT);
         query.equalTo("owner", current_user.get("ethAddress"));
-        const results = await agent.find();
+          const results = await query.find();
         const parsed_results = results.map((item) => (
             item.attributes
         ))
@@ -50,9 +50,9 @@ const MyCollection = () => {
   return (
     <div id="my-collection">
       <Header />
-      <Search/>
+      {/*<Search/>*/}
       <div id="list-container" style={{"margin-top": "90px"}}>
-        <CardList list={exploreData} />
+        <CardList list={exploreData} page={"collection"}/>
       </div>
     </div>
   );
