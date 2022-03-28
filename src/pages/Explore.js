@@ -16,9 +16,13 @@ const Explore = () => {
     const fetchData = async () => {
       const NFT = Moralis.Object.extend("NFT");
       const agent = new Moralis.Query(NFT);
+      agent.equalTo("isListed", true);
       const results = await agent.find();
       parsedResults.current = results.map((item) => (
-        item.attributes
+          {
+            ...item.attributes,
+            "rawItem": item
+          }
       ))
       console.log(parsedResults.current)
       setExploreData(parsedResults.current);

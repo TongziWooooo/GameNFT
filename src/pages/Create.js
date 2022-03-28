@@ -19,7 +19,7 @@ import Moralis from "moralis";
 import GameNFT from '../artifacts/contracts/GameNFT.sol/GameNFT.json'
 import {ethers} from "ethers";
 import {useMoralis} from "react-moralis";
-const gameNFTAddress = "0xcf7ed3acca5a467e9e704c703e8d87f634fb0fc9"
+const gameNFTAddress = "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44"
 
 const Create = () => {
   const padding = "5px";
@@ -133,9 +133,14 @@ const Create = () => {
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     const signer = provider.getSigner()
     const contract = new ethers.Contract(gameNFTAddress, GameNFT.abi, signer)
-    const transaction = await contract.mintItem("https://www.google.com", 0)
-    await transaction.wait()
+    const transaction = await contract.mintItem(tokenURI, tokenType)
+    const rc = await transaction.wait()
+    const event = rc.events.find(event => event.event === "NFTCreated")
+    const [q,w,e,c] = event.args
+    console.log("args", event.args)
     console.log(transaction)
+    const tokenID = q;
+
 
     // create reference in database
     const NFT = Moralis.Object.extend("NFT");
@@ -148,9 +153,10 @@ const Create = () => {
     nft.set("attributes", attributes);
     nft.set("tokenURI", tokenURI);
     nft.set("owner", user_address);
-    nft.set("tokenID", transaction);
+    nft.set("minter", user_address)
+    nft.set("contract", gameNFTAddress);
+    nft.set("tokenID", tokenID);
     nft.set("isListed", false);
-    nft.set("isSold", false);
     nft.set("price", price);
     nft.set("like", 0);
 

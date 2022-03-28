@@ -34,11 +34,16 @@ const MyCollection = () => {
         })
       }
       else {
-        const query = new Moralis.Query(NFT);
-        query.equalTo("owner", current_user.get("ethAddress"));
-          const results = await query.find();
+        const query_owner = new Moralis.Query(NFT);
+        query_owner.equalTo("owner", current_user.get("ethAddress"));
+        const query_publisher = new Moralis.Query(NFT);
+        query_publisher.equalTo("publisher", current_user.get("ethAddress"));
+        const results = await Moralis.Query.or(query_owner, query_publisher).find();
         const parsed_results = results.map((item) => (
-            item.attributes
+            {
+              ...item.attributes,
+              "rawItem": item
+            }
         ))
         console.log(parsed_results)
         setExploreData(parsed_results);
