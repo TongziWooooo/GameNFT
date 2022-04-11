@@ -178,7 +178,7 @@ const Create = () => {
       <div id="nft-detail-card-wrapper">
         <Card
           width={isMobile ? "100%" : "65vw"}
-          height={isMobile ? "700px" : "75vh"}
+          height={isMobile ? "700px" : "88vh"}
           child={
             //Detail Content
             <div id="detail-content">

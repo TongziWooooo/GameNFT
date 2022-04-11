@@ -19,8 +19,8 @@ const Hero = () => {
 
       <Header />
 
-      <h1 id="header-text-first"> NFT </h1>
-      <h1 id="header-text-second"> Darkroom Marketplace</h1>
+      <h1 id="header-text-first"> GameNFT </h1>
+      <h1 id="header-text-second"> Marketplace</h1>
       <h5 id="header-subtext">Craft, hunt and trade NFT's in the dark</h5>
 
       <div id="hero-buttons">
