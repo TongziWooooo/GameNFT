@@ -53,3 +53,9 @@ artifacts
 
 #backend
 backend
+
+#For test
+src/index.js
+
+#package-lock.json
+package-lock.json

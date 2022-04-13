@@ -19,7 +19,7 @@ import Moralis from "moralis";
 import GameNFT from '../artifacts/contracts/GameNFT.sol/GameNFT.json'
 import {ethers} from "ethers";
 import {useMoralis} from "react-moralis";
-const gameNFTAddress = "0x322813Fd9A801c5507c9de605d63CEA4f2CE6c44"
+const gameNFTAddress = "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
 
 const Create = () => {
   const padding = "5px";
