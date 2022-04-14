@@ -8,7 +8,7 @@ import Home from "./pages/Home";
 import Create from "./pages/Create";
 import Explore from "./pages/Explore";
 import MyCollection from "./pages/MyCollection";
-
+import GameArena from "./pages/GameArena";
 //dapp
 import NFTDetail from "./pages/NFTDetail";
 import { MoralisProvider } from "react-moralis";
@@ -27,6 +27,7 @@ ReactDOM.render(
           <Route path="/collection" element={<MyCollection />} />
           <Route path="/explore" element={<Explore />} />
           <Route path="/detail" element={<NFTDetail />} />
+          <Route path="/arena" element={<GameArena />} />
           <Route path="/test" element={<App />} />
         </Routes>
       </MoralisProvider>

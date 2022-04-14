@@ -19,7 +19,7 @@ import Moralis from "moralis";
 import GameNFT from '../artifacts/contracts/GameNFT.sol/GameNFT.json'
 import {ethers} from "ethers";
 import {useMoralis} from "react-moralis";
-const gameNFTAddress = "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
+import {gameNFTAddress} from "../App"
 
 const Create = () => {
   const padding = "5px";
@@ -139,7 +139,7 @@ const Create = () => {
     const [q,w,e,c] = event.args
     console.log("args", event.args)
     console.log(transaction)
-    const tokenID = q;
+    const tokenID = parseInt(q._hex, 16);
 
 
     // create reference in database
@@ -183,16 +183,16 @@ const Create = () => {
             //Detail Content
             <div id="detail-content">
 
-              <div id="detail-info" style={{"text-align": "center", "justify-content": "center", "width": "100%"}}>
+              <div id="detail-info" style={{"textAlign": "center", "justifyContent": "center", "width": "100%"}}>
                 <div id='detail-info-container'>
                   <TextInput type={"radio"} height={"60px"} setValue={setTokenType} padding={padding} child={
                     <div>
-                      <label className="container" style={{"font-size": "20px"}}>
+                      <label className="container" style={{"fontSize": "20px"}}>
                         {"Artwork"}
                         <input type="radio" onChange={handleTokenType} value={"artwork"} name={"tokentype"} defaultChecked/>
                         <span className="checkmark"/>
                       </label>
-                      <label className="container" style={{"font-size": "20px"}}>
+                      <label className="container" style={{"fontSize": "20px"}}>
                         {"Game Prop"}
                         <input type="radio" onChange={handleTokenType} value={"game prop"} name={"tokentype"}/>
                         <span className="checkmark"/>
@@ -203,7 +203,7 @@ const Create = () => {
                     <input id="search" placeholder={"Name"} onChange={handleName}/>
                   }/>
                   <TextInput height={"300px"} padding={padding} child={
-                    <textarea id="search" style={{"resize":"none", "border-radius":"0px"}} placeholder={"Description"} onChange={handleDesc}/>
+                    <textarea id="search" style={{"resize":"none", "borderRadius":"0px"}} placeholder={"Description"} onChange={handleDesc}/>
                   }/>
                   <TextInput padding={padding} child={
                     <input id="search" type="file" onChange={handleFile}/>

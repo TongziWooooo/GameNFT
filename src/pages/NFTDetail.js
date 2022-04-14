@@ -20,7 +20,7 @@ import Moralis from "moralis";
 import {ethers} from "ethers";
 import Marketplace from "../artifacts/contracts/Marketplace.sol/Marketplace.json";
 import {useMoralis} from "react-moralis";
-const marketplaceAddress = "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1"
+import {marketplaceAddress} from "../App"
 
 
 
@@ -63,6 +63,13 @@ const NFTDetail = () => {
   const handleListed = () => {
     setIsListed(!isListed);
   }
+
+  const attr = Object.entries(state.item.attributes).map((key, value) => {
+        return (
+            <li>{key}: {value}</li>
+        )
+      }
+  )
 
 
   const buy = async () => {
@@ -189,6 +196,13 @@ const NFTDetail = () => {
                   <p id="name"> {state.item.name} </p>
                   <p id="collection"> {state.item.tokenType === 1 ? "Artwork" : "Game Prop"} </p>
                   <p id="description" > {state.item.description} </p>
+                  {
+                    state.item.tokenType === 1 ? null :
+                        <div id="game-prop-attr">
+                          <p id="game-prop-title"> Prop attributes: </p>
+                          {attr} </div>
+                  }
+
                   {state.page === "collection" ?
                     <div>
                       <TextInput style={{"position": "absolute", "bottom": "60px"}} child={

@@ -34,7 +34,7 @@ const Header = () => {
 
         <div id="link-containers">
           <a onClick={() => navigate("/explore")}>Start Hunting</a>
-          <a>Dark NFTs</a>
+          <a onClick={() => navigate("/arena")}>Game Arena</a>
           <a onClick={() => navigate("/collection")}>My Collection</a>
           <a onClick={() => navigate("/create")}>Craft NFT</a>
           {!isAuthenticated ? null : <a>{"Welcome, " + user.get("ethAddress")}</a> }

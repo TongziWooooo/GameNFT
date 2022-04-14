@@ -19,7 +19,11 @@ const NFTCard = ({
                    price,
                    img,
                    like,
-                   onClick
+                   inTeam,
+                   tokenID,
+                   onClick,
+                   handleChangeTeam,
+                   page
 }) => {
   const [isLike, setIsLike] = useState(false);
   const [colors, setColors] = useState([]);
@@ -42,10 +46,14 @@ const NFTCard = ({
     console.log(e.target.innerText);
   }
 
+  const cardStyle = {
+    border: inTeam ? "1px solid white" : "",
+  }
+
 
   return (
     <Card
-      blurColor={colors[0]}
+      blurColor={colors[0]} style={cardStyle}
 
       child={<>
         {
@@ -67,14 +75,23 @@ const NFTCard = ({
           <div className="price-container">
             <p className="price-label">Price{" "}
               <FaEthereum /></p>
-            <p className="price" contentEditable={"true"} onInput={handleChange}>
+            <p className="price" onInput={handleChange}>
                {price}
             </p>
           </div>
         </div>
         <div className="buttons">
           {/* <button className="buy-now">Buy Now</button> */}
-            <Button color={Colors.buttons.primary} textContent="Detail" onClick={onClick} />
+          {
+            page === "arena-true" ? <Button color={inTeam ? Colors.buttons.danger :Colors.buttons.secondary}
+                                            textContent={inTeam ? "Quit" : "Set in Team"}
+                                            onClick={() => handleChangeTeam(tokenID)} /> :
+            page === "arena-false" ? <Button color={Colors.buttons.danger}
+                                             textContent={inTeam ? "Quit" : "Fight"}
+                                             onClick={() => handleChangeTeam(tokenID)} /> : null
+          }
+
+          <Button color={Colors.buttons.primary} textContent="Detail" onClick={onClick} />
           <div className="like-container">
             <button className="like" onClick={handleLike}>
               {!isLike ? (
