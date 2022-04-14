@@ -19,6 +19,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "react-slick": "^0.28.1",
+    "typewriter-effect": "^2.18.2",
     "web-vitals": "^2.1.2"
   },
   "scripts": {

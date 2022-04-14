@@ -7,11 +7,10 @@ import Card from "./base/Card";
 import Button from "./base/Button";
 import { Colors } from "../constants/Colors";
 
-
 import { ModelViewerElement } from "@google/model-viewer";
 import { useARStatus } from "../hooks/isARStatus";
-
-
+import {useNavigate} from "react-router-dom";
+import Moralis from "moralis";
 
 const NFTCard = ({
                    tokenType,
@@ -31,7 +30,8 @@ const NFTCard = ({
   const isARSupport = useARStatus(img);
 
   useEffect(() => {
-    console.log(isARSupport);
+    // console.log(isARSupport);
+    console.log(tokenID, "in Team?", inTeam)
   }, [])
 
   const handleLike = () => setIsLike(!isLike);
@@ -41,19 +41,57 @@ const NFTCard = ({
     //console.log(colors);
   }
 
+  const getUser = async () => {
+    // require login
+    if (!Moralis.User.current()) {
+      await Moralis.authenticate();
+    }
+    const user = Moralis.User.current();
+    try{
+      return user.get("ethAddress");
+    }
+    catch (e) {
+      console.log(e.message)
+      return null
+    }
+  }
+
+  const team = Moralis.Object.extend("Team");
+  const getTeam = async (user_address) => {
+    const agent = new Moralis.Query(team);
+    agent.equalTo("user", user_address);
+    return await agent.find();
+  }
+
+  let navigate = useNavigate();
+  const handleFight = async () => {
+    const user = await getUser();
+    if (!user) {
+      alert('Please login!')
+      return;
+    }
+    const userTeam = await getTeam(user);
+    if (!userTeam.length) {
+      alert('You need to setup a team first!')
+      return;
+    }
+    const params = {attacker: userTeam[0].attributes.tokenID, defender: tokenID}
+    console.log(params)
+
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm(`Start fighting with ${name}?`)) {
+      navigate("/game", {state: params})
+    }
+  }
+
 
   const handleChange = (e) => {
     console.log(e.target.innerText);
   }
 
-  const cardStyle = {
-    border: inTeam ? "1px solid white" : "",
-  }
-
-
   return (
     <Card
-      blurColor={colors[0]} style={cardStyle}
+      blurColor={colors[0]} inTeam={inTeam}
 
       child={<>
         {
@@ -88,7 +126,7 @@ const NFTCard = ({
                                             onClick={() => handleChangeTeam(tokenID)} /> :
             page === "arena-false" ? <Button color={Colors.buttons.danger}
                                              textContent={inTeam ? "Quit" : "Fight"}
-                                             onClick={() => handleChangeTeam(tokenID)} /> : null
+                                             onClick={inTeam? () => handleChangeTeam(tokenID) : handleFight} /> : null
           }
 
           <Button color={Colors.buttons.primary} textContent="Detail" onClick={onClick} />

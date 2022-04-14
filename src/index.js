@@ -9,6 +9,7 @@ import Create from "./pages/Create";
 import Explore from "./pages/Explore";
 import MyCollection from "./pages/MyCollection";
 import GameArena from "./pages/GameArena";
+import Game from "./pages/Game";
 //dapp
 import NFTDetail from "./pages/NFTDetail";
 import { MoralisProvider } from "react-moralis";
@@ -28,6 +29,7 @@ ReactDOM.render(
           <Route path="/explore" element={<Explore />} />
           <Route path="/detail" element={<NFTDetail />} />
           <Route path="/arena" element={<GameArena />} />
+          <Route path="/game" element={<Game />} />
           <Route path="/test" element={<App />} />
         </Routes>
       </MoralisProvider>

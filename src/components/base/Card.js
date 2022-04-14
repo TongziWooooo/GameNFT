@@ -9,6 +9,7 @@ const Card = React.forwardRef(
       child,
       blurColor = "rgba(48,118,234,0.2)",
       onClick,
+      inTeam
     },
     ref
   ) => (
@@ -23,6 +24,7 @@ const Card = React.forwardRef(
                 ${blurColor} 0%,
                 rgba(255, 255, 255, 0.05) 70%
               )`,
+        border: inTeam ? "2px solid white" : "",
       }}
       onClick={onClick}
       ref={ref}

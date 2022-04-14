@@ -70,8 +70,9 @@ const GameArena = () => {
         myTeam.set("contract", gameNFTAddress);
         myTeam.set("tokenID", tokenID);
         myTeam.save()
-            .then((res) => {
+            .then(async (res) => {
               console.log('Team created!', res.get("user"), res.get("contract"), res.get("tokenID"));
+              await fetchData();
               alert("Successfully created!");
             }, (error) => {
               alert('Failed to create, with error code: ' + error.message);
@@ -83,10 +84,10 @@ const GameArena = () => {
         myTeam.set("contract", gameNFTAddress);
         myTeam.set("tokenID", tokenID);
         myTeam.save()
-            .then((res) => {
+            .then(async (res) => {
               console.log('Team updated!', res.get("user"), res.get("contract"), res.get("tokenID"));
               setMyTeamMember(res.get("tokenID"));
-              fetchData();
+              await fetchData();
               alert("Successfully updated!");
             }, (error) => {
               alert('Failed to update, with error code: ' + error.message);
