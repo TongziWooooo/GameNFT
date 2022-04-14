@@ -38,7 +38,7 @@ const Header = () => {
           <a onClick={() => navigate("/collection")}>My Collection</a>
           <a onClick={() => navigate("/create")}>Craft NFT</a>
           {!isAuthenticated ? null : <a>{"Welcome, " + user.get("ethAddress")}</a> }
-          <button id="connect-wallet" onClick={!isAuthenticated ? login : logOut}  disabled={isAuthenticating}>{!isAuthenticated ? 'Connect Wallet' : 'Logout'}</button>
+          <button id="connect-wallet" onClick={!isAuthenticated ? login : logOut}  disabled={isAuthenticating}>{!isAuthenticated ? 'Login' : 'Logout'}</button>
         </div>
       </div>
     );

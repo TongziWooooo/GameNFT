@@ -13,16 +13,18 @@ import Typewriter from 'typewriter-effect/dist/core';
 const Game = () => {
   let navigate = useNavigate();
   const {state} = useLocation();
-  // const [data, setData] = useState(state);
-  const [data, setData] = useState([
-    "Tom attacks Jerry, damage=5", "Jerry attacks Tom, damage=5",
-    "Tom dodges!", "Jerry attacks Tom, damage=5",
-    "Tom attacks Jerry, damage=5", "Jerry dodges!",]);
+  const [data, setData] = useState([]);
+  const [gameIndex, setGameIndex] = useState(-1);
+  const [gameResult, setGameResult] = useState(-1);
   const [isOver, setIsOver] = useState(false);
 
   useEffect(() => {
-    console.log(state)
-    console.log(data)
+    if (data.length){
+      printLines();
+    }
+  }, [data]);
+
+  const printLines = () => {
     let wait = 0;
     const delay = 50;
     for (const i in data) {
@@ -30,90 +32,83 @@ const Game = () => {
       typewriter.pauseFor(delay * wait).typeString(data[i]).start()
       wait += data[i].length + 15;
     }
-    setTimeout(showResult, wait * delay)
-  }, [])
+    setTimeout(showResult, (wait + 10) * delay)
+  }
 
-  const showResult = () => {
+  const showResult = async () => {
     setIsOver(true);
+    const result = gameResult ? "WON :)" : "LOST :(("
     // eslint-disable-next-line no-restricted-globals
-    if (confirm("Game ends!")) {
+    if (confirm(`Game ends! You ${result}`)) {
+      if (gameResult) {
+        try {
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner()
+          const contractArenaGame = new ethers.Contract(arenaGameAddress, ArenaGame.abi, signer)
+          const transaction = await contractArenaGame.updateGameResult(gameIndex, gameResult)
+          console.log('data: ', transaction)
+        } catch (err) {
+          console.log("Error: ", err)
+        }
+      }
       navigate("/arena");
-    }
-    else {
+    } else {
 
     }
   }
 
 
-  const getGameResult = async () => {
-    let adversaryTeamID = ""
-    if (typeof window.ethereum !== 'undefined') {
-      await window.ethereum.request({ method: 'eth_requestAccounts' });
+  useEffect(() => {
+    async function getGameResult() {
+      if (typeof window.ethereum !== 'undefined') {
+        await window.ethereum.request({method: 'eth_requestAccounts'});
+      }
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+      const signer = provider.getSigner()
+      const atkPlayerAddress = state.attacker.address
+      const defPlayerAddress = state.attacker.address
+      const getInfo = (token, attr) => {
+        return {
+          tokenID: token.tokenID.toString(),
+          name: token.name,
+          attack: (attr.attack_base + attr.attack_growth * attr.level).toString(),
+          armor: (attr.armor_base + attr.armor_growth * attr.level).toString(),
+          speed: (attr.speed_base + attr.speed_growth * attr.level).toString(),
+          hp: (attr.hp_base + attr.hp_growth * attr.level).toString(),
+          luck: attr.luck.toString()
+        }
+      }
+      const atkToken = getInfo(state.attacker.token, state.attacker.token.attributes)
+      const defToken = getInfo(state.defender.token, state.defender.token.attributes)
+
+      const contractArenaGame = new ethers.Contract(arenaGameAddress, ArenaGame.abi, signer)
+      let event;
+      try {
+        const transaction = await contractArenaGame.createGame(atkPlayerAddress, defPlayerAddress,
+            atkToken, defToken)
+        const rc = await transaction.wait()
+        event = rc.events.find(event => event.event === "GameCreated")
+        console.log('data: ', event.args)
+
+        let params = {
+          seed: event.args.seed.toNumber(),
+          heroInfo1: atkToken,
+          heroInfo2: defToken
+        }
+        const res = await Moralis.Cloud.run("battle", params);
+        console.log(res)
+        setGameIndex(event.args.gameIndex);
+        setGameResult(res[1]);
+        setData(res[0]);
+        // printLines();
+
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+
     }
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner()
-    const contractArena = new ethers.Contract(arenaAddress, Arena.abi, signer)
-    let atkPlayerInfo, defPlayerInfo;
-
-    try {
-      atkPlayerInfo = await contractArena.fetchPlayerTeamAddress(signer.getAddress())
-      console.log('data: ', atkPlayerInfo)
-    } catch (err) {
-      console.log("Error: ", err)
-    }
-
-    try {
-      defPlayerInfo = await contractArena.fetchPlayerTeamIndex(adversaryTeamID)
-      console.log('data: ', defPlayerInfo)
-    } catch (err) {
-      console.log("Error: ", err)
-    }
-
-    // Get Token Attributes
-    let heroInfo1 = {
-      tokenID : "0", name: "Tom", attack : "10", armor : "15",
-      speed : "25", luck : "40", hp : "150"
-    }
-    let heroInfo2 = {
-      tokenID : "1", name: "Jerry", attack : "15", armor : "10",
-      speed : "40", luck : "30", hp : "120"
-    }
-
-
-    const contractArenaGame = new ethers.Contract(arenaGameAddress, ArenaGame.abi, signer)
-    let event;
-    try {
-      let atkPlayerAddress = atkPlayerInfo.playerAddress
-      let defPlayerAddress = defPlayerInfo.playerAddress
-      const transaction = await contractArenaGame.createGame(atkPlayerAddress, defPlayerAddress,
-          heroInfo1, heroInfo2)
-      const rc = await transaction.wait()
-      event = rc.events.find(event => event.event === "GameCreated")
-      console.log('data: ', event.args)
-    } catch (err) {
-      console.log("Error: ", err)
-    }
-
-
-    let params = {
-      seed: event.args.seed.toNumber(),
-      heroInfo1: heroInfo1,
-      heroInfo2: heroInfo2
-    }
-
-
-    const res = await Moralis.Cloud.run("battle", params);
-    console.log(res)
-    let gameIndex = event.args.gameIndex;
-    let gameResult = res[1]
-
-    try {
-      const transaction = await contractArenaGame.updateGameResult(gameIndex, gameResult)
-      console.log('data: ', transaction)
-    } catch (err) {
-      console.log("Error: ", err)
-    }
-  }
+    getGameResult()
+  }, [])
 
   const goCreate = () => {
     console.log(state)

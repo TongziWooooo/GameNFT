@@ -13,11 +13,6 @@ const MyCollection = () => {
   const [exploreData, setExploreData] = useState([]);
   const { authenticate, isAuthenticated, isAuthenticating, user} = useMoralis();
 
-  // const [current_user, setUser] = useState(user);
-  // useEffect(() => {
-  //   setUser(current_user)
-  //   console.log('current user: ', current_user);
-  // }, [isAuthenticated])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -25,13 +20,9 @@ const MyCollection = () => {
       let current_user = user
       console.log(current_user)
       console.log(isAuthenticated)
-      if (!isAuthenticating && !isAuthenticated) {
+      if (!isAuthenticated) {
         setExploreData([]);
-        await authenticate().then(function (user) {
-          console.log(user.get('ethAddress'))
-          current_user = user
-          console.log(current_user)
-        })
+        alert('Please login to see your collection!')
       }
       else {
         const query_owner = new Moralis.Query(NFT);

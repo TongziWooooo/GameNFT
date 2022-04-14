@@ -7,19 +7,31 @@ import "../styles/Arena.css"
 import {arenaAddress, gameNFTAddress} from "../App";
 import {ethers} from "ethers";
 import Arena from '../artifacts/contracts/Arena.sol/Arena.json'
+import {useNavigate} from "react-router-dom";
+import login from "../components/Header"
 
 
 const GameArena = () => {
   const NFT = Moralis.Object.extend("NFT");
   const team = Moralis.Object.extend("Team");
+  const navigate = useNavigate();
 
   const [isTeamPage, setIsTeamPage] = useState(false);
   const [myTeamMember, setMyTeamMember] = useState("");
   const [exploreData, setExploreData] = useState([]);
   const { authenticate, isAuthenticated, isAuthenticating, user} = useMoralis();
 
-  const switchArena = () => {
-    setIsTeamPage(!isTeamPage)
+  useEffect(() => {
+
+  }, [myTeamMember])
+
+  const switchArena = (e) => {
+    if (e.target.value === "Hall") {
+      setIsTeamPage(false)
+    }
+    else {
+      setIsTeamPage(true)
+    }
     console.log("isTeamPage:", isTeamPage)
   };
 
@@ -104,7 +116,8 @@ const GameArena = () => {
       console.log(user)
       console.log(isAuthenticated)
       if (!Moralis.User.current()) {
-        await Moralis.authenticate();
+        setExploreData([]);
+        alert('Please login to manage your team!')
       }
       else {
         // query my NFTs
@@ -117,16 +130,18 @@ const GameArena = () => {
         const query_tokenType = new Moralis.Query(NFT);
         query_tokenType.equalTo("tokenType", 0);
         const results = await Moralis.Query.and(query_tokenType, Moralis.Query.or(query_owner, query_publisher)).find();
-        const myTeam = await getTeam(user_address);
-        if (myTeam.length !== 0) {
-          setMyTeamMember(myTeam[0].get("tokenID"));
-          console.log(myTeamMember)
+        let myTeam;
+        const res = await getTeam(user_address);
+        if (res.length !== 0) {
+          setMyTeamMember(res[0].get("tokenID"));
+          myTeam = res[0].get("tokenID");
+          console.log(myTeam);
         }
         const parsed_results = results.map((item) => (
             {
               ...item.attributes,
               "rawItem": item,
-              "inTeam": item.attributes.tokenID === myTeamMember
+              "inTeam": item.get("tokenID") === myTeam,
             }
         ))
         console.log(parsed_results)
@@ -142,11 +157,23 @@ const GameArena = () => {
       const agent = new Moralis.Query(NFT);
       agent.containedIn("tokenID", teams.map((item) => [item.attributes.tokenID]));
       const results = await agent.find()
+      // get my team
+      const user = Moralis.User.current();
+      let myTeam;
+      if (user) {
+        const user_address = user.get("ethAddress");
+        const res = await getTeam(user_address);
+        if (res.length !== 0) {
+          setMyTeamMember(res[0].get("tokenID"));
+          myTeam = res[0].get("tokenID");
+          console.log(myTeam);
+        }
+      }
       const parsed_results = results.map((item) => (
           {
             ...item.attributes,
             "rawItem": item,
-            "inTeam": item.get("tokenID") === myTeamMember,
+            "inTeam": item.get("tokenID") === myTeam,
           }
       ))
       console.log(parsed_results)
@@ -161,8 +188,8 @@ const GameArena = () => {
     <div id="arena">
       <Header />
       <div id="arena-buttons">
-        <button id={!isTeamPage ? "arena-selected" : "arena"} onClick={switchArena}>Hall</button>
-        <button id={isTeamPage ? "arena-selected" : "arena"} onClick={switchArena}>My Team</button>
+        <button id={!isTeamPage ? "arena-selected" : "arena"} value={"Hall"} onClick={switchArena}>Hall</button>
+        <button id={isTeamPage ? "arena-selected" : "arena"} value={"My Team"} onClick={switchArena}>My Team</button>
       </div>
       <div id="list-container" style={{"marginTop": "90px"}}>
         <CardList list={exploreData} page={"arena-" + isTeamPage} handleChangeTeam={handleChangeTeam}/>

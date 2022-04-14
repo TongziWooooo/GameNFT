@@ -35,7 +35,7 @@ Card component similar div html element.
           <Button width='100px' height='50px' color={Colors.buttons.primary} textContent="Primary" />
           <Button width='100px' height='50px' color={Colors.buttons.secondary} textContent="Secondary" />
           <Button width='100px' height='50px' color={Colors.buttons.danger} textContent="Danger"/>
-          <Button width='100px' height='50px' color={Colors.buttons.succes} textContent="Succes" />
+          <Button width='100px' height='50px' color={Colors.buttons.success} textContent="Succes" />
          </div>
        }
     />
@@ -247,7 +247,7 @@ Input for text or number values.
             width="100%"
             height="40px"
             textContent="Submit"
-            color={Colors.buttons.succes}
+            color={Colors.buttons.success}
         />
     </>
     }

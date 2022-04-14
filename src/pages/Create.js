@@ -14,6 +14,7 @@ import {ColorExtractor} from "react-color-extractor";
 import {FaEthereum} from "react-icons/fa";
 import React from "react";
 import {useMobile} from "../hooks/isMobile";
+import {useNavigate} from "react-router-dom";
 
 import Moralis from "moralis";
 import GameNFT from '../artifacts/contracts/GameNFT.sol/GameNFT.json'
@@ -24,6 +25,7 @@ import {gameNFTAddress} from "../App"
 const Create = () => {
   const padding = "5px";
   const isMobile = useMobile();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   useEffect(() => {
@@ -104,7 +106,8 @@ const Create = () => {
         "armor_growth": getRandomInt(1, 10),
         "speed_growth": getRandomInt(1, 10),
         "hp_growth": getRandomInt(1, 10),
-        "level": getRandomInt(1, 10)
+        "level": getRandomInt(1, 10),
+        "luck": getRandomInt(1, 100)
       }
     }
 
@@ -164,7 +167,10 @@ const Create = () => {
         .then((nft) => {
           // Execute any logic that should take place after the object is saved.
           console.log('New object created with objectId: ' + nft.id);
-          alert("Successfully create! Name: " + name + ", Desc:" + desc);
+          // eslint-disable-next-line no-restricted-globals
+          if (confirm("Successfully create! Name: " + name + ", Desc:" + desc)){
+            navigate('/collection');
+          }
         }, (error) => {
           // Execute any logic that should take place if the save fails.
           // error is a Moralis.Error with an error code and message.
@@ -216,7 +222,7 @@ const Create = () => {
                     height="40px"
                     padding={padding}
                     textContent="Submit"
-                    color={Colors.buttons.succes}
+                    color={Colors.buttons.success}
                     onClick={handleClick}
                   />
                 </div>
