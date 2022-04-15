@@ -8,7 +8,6 @@ import {arenaAddress, gameNFTAddress} from "../App";
 import {ethers} from "ethers";
 import Arena from '../artifacts/contracts/Arena.sol/Arena.json'
 import {useNavigate} from "react-router-dom";
-import login from "../components/Header"
 
 
 const GameArena = () => {
@@ -35,16 +34,58 @@ const GameArena = () => {
     console.log("isTeamPage:", isTeamPage)
   };
 
-  const getTeam = async (user_address) => {
+
+  // Team functions
+  const getTeamTokenByUser = async (user_address) => {
     const agent = new Moralis.Query(team);
     agent.equalTo("user", user_address);
     return await agent.find();
+  }
+  const getTeamUserByToken = async (tokenID) => {
+    const agent = new Moralis.Query(team);
+    agent.equalTo("tokenID", tokenID);
+    return await agent.find();
+  }
+
+  // NFT functions
+  const getNFTByID = async (tokenID) => {
+    const agent = new Moralis.Query(NFT);
+    agent.equalTo("tokenID", tokenID);
+    return await agent.first();
+  }
+
+  const handleFight = async (tokenID) => {
+    // require login
+    if (!Moralis.User.current()) {
+      alert('Please login to fight!')
+      return;
+    }
+    const user = Moralis.User.current();
+    const attacker = user.get("ethAddress");
+    const userTeam = await getTeamTokenByUser(attacker);
+    if (!userTeam.length) {
+      alert('You need to setup a team first!')
+      return;
+    }
+    const defender = (await getTeamUserByToken(tokenID))[0].attributes.user;
+    const attacker_token = await getNFTByID(userTeam[0].attributes.tokenID);
+    const defender_token = await getNFTByID(tokenID);
+    const params = {
+      attacker: {address: attacker, token: attacker_token.attributes},
+      defender: {address: defender, token: defender_token.attributes}
+    }
+    console.log(params)
+
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm(`Start fighting with ${defender_token.attributes.name}?`)) {
+      navigate("/game", {state: params})
+    }
   }
 
   const handleChangeTeam = async (tokenID) => {
     const user = Moralis.User.current();
     const user_address = user.get("ethAddress");
-    const results = await getTeam(user_address);
+    const results = await getTeamTokenByUser(user_address);
 
     // setting up the contract
     if (typeof window.ethereum !== 'undefined') {
@@ -59,9 +100,9 @@ const GameArena = () => {
       try {
         const data = await contract.quitArena()
         console.log('data: ', data)
-        results[0].destroy();
+        await results[0].destroy();
         setMyTeamMember("");
-        fetchData();
+        await fetchData();
         return;
       } catch (err) {
         console.log("Error: ", err)
@@ -131,7 +172,7 @@ const GameArena = () => {
         query_tokenType.equalTo("tokenType", 0);
         const results = await Moralis.Query.and(query_tokenType, Moralis.Query.or(query_owner, query_publisher)).find();
         let myTeam;
-        const res = await getTeam(user_address);
+        const res = await getTeamTokenByUser(user_address);
         if (res.length !== 0) {
           setMyTeamMember(res[0].get("tokenID"));
           myTeam = res[0].get("tokenID");
@@ -162,7 +203,7 @@ const GameArena = () => {
       let myTeam;
       if (user) {
         const user_address = user.get("ethAddress");
-        const res = await getTeam(user_address);
+        const res = await getTeamTokenByUser(user_address);
         if (res.length !== 0) {
           setMyTeamMember(res[0].get("tokenID"));
           myTeam = res[0].get("tokenID");
@@ -192,7 +233,7 @@ const GameArena = () => {
         <button id={isTeamPage ? "arena-selected" : "arena"} value={"My Team"} onClick={switchArena}>My Team</button>
       </div>
       <div id="list-container" style={{"marginTop": "90px"}}>
-        <CardList list={exploreData} page={"arena-" + isTeamPage} handleChangeTeam={handleChangeTeam}/>
+        <CardList list={exploreData} page={"arena-" + isTeamPage} handleChangeTeam={handleChangeTeam} handleFight={handleFight}/>
       </div>
     </div>
   );

@@ -22,6 +22,7 @@ const NFTCard = ({
                    tokenID,
                    onClick,
                    handleChangeTeam,
+                   handleFight,
                    page
 }) => {
   const [isLike, setIsLike] = useState(false);
@@ -39,56 +40,6 @@ const NFTCard = ({
   const getColors = colors => {
     setColors(c => [...c, ...colors]);
     //console.log(colors);
-  }
-
-  // Team functions
-  const team = Moralis.Object.extend("Team");
-  const getTeamTokenByUser = async (user_address) => {
-    const agent = new Moralis.Query(team);
-    agent.equalTo("user", user_address);
-    return await agent.find();
-  }
-  const getTeamUserByToken = async (tokenID) => {
-    const agent = new Moralis.Query(team);
-    agent.equalTo("tokenID", tokenID);
-    return await agent.find();
-  }
-
-  // NFT functions
-  const NFT = Moralis.Object.extend("NFT");
-  const getNFTByID = async (tokenID) => {
-    const agent = new Moralis.Query(NFT);
-    agent.equalTo("tokenID", tokenID);
-    return await agent.first();
-  }
-
-  const navigate = useNavigate();
-  const handleFight = async () => {
-    // require login
-    if (!Moralis.User.current()) {
-      alert('Please login to fight!')
-      return;
-    }
-    const user = Moralis.User.current();
-    const attacker = user.get("ethAddress");
-    const userTeam = await getTeamTokenByUser(attacker);
-    if (!userTeam.length) {
-      alert('You need to setup a team first!')
-      return;
-    }
-    const defender = (await getTeamUserByToken(tokenID))[0];
-    const attacker_token = await getNFTByID(userTeam[0].attributes.tokenID);
-    const defender_token = await getNFTByID(tokenID);
-    const params = {
-      attacker: {address: attacker, token: attacker_token.attributes},
-      defender: {address: defender, token: defender_token.attributes}
-    }
-    console.log(params)
-
-    // eslint-disable-next-line no-restricted-globals
-    if (confirm(`Start fighting with ${name}?`)) {
-      navigate("/game", {state: params})
-    }
   }
 
 
@@ -133,7 +84,7 @@ const NFTCard = ({
                                             onClick={() => handleChangeTeam(tokenID)} /> :
             page === "arena-false" ? <Button color={inTeam ? "yellow" :Colors.buttons.danger}
                                              textContent={inTeam ? "Quit" : "Fight"}
-                                             onClick={inTeam? () => handleChangeTeam(tokenID) : handleFight} /> : null
+                                             onClick={inTeam? () => handleChangeTeam(tokenID) : () => handleFight(tokenID)} /> : null
           }
 
           <Button color={Colors.buttons.primary} textContent="Detail" onClick={onClick} />

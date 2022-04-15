@@ -37,9 +37,9 @@ const Game = () => {
 
   const showResult = async () => {
     setIsOver(true);
-    const result = gameResult ? "WON :)" : "LOST :(("
+    const result = "Game ends! You " + (gameResult ? "WON :) Confirm the transaction to receive money!" : "LOST :((")
     // eslint-disable-next-line no-restricted-globals
-    if (confirm(`Game ends! You ${result}`)) {
+    if (confirm(result)) {
       if (gameResult) {
         try {
           const provider = new ethers.providers.Web3Provider(window.ethereum);

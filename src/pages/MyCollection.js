@@ -47,7 +47,7 @@ const MyCollection = () => {
     <div id="my-collection">
       <Header />
       {/*<Search/>*/}
-      <div id="list-container" style={{"margin-top": "90px"}}>
+      <div id="list-container" style={{"marginTop": "90px"}}>
         <CardList list={exploreData} page={"collection"}/>
       </div>
     </div>
