@@ -8,10 +8,10 @@ import Marketplace from './artifacts/contracts/Marketplace.sol/Marketplace.json'
 import Moralis from "moralis";
 
 // Update with the contract address logged out to the CLI when it was deployed
-const gameNFTAddress = "0xe7f1725E7734CE288F8367e1Bb143E90bb3F0512"
-const arenaAddress = "0x1429859428C0aBc9C2C47C8Ee9FBaf82cFA0F20f"
-const arenaGameAddress = "0xB0D4afd8879eD9F52b28595d31B441D079B2Ca07"
-const marketplaceAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+const gameNFTAddress = "0x202CCe504e04bEd6fC0521238dDf04Bc9E8E15aB"
+const arenaAddress = "0xf4B146FbA71F41E0592668ffbF264F1D186b2Ca8"
+const arenaGameAddress = "0x172076E0166D1F9Cc711C77Adf8488051744980C"
+const marketplaceAddress = "0x0355B7B8cb128fA5692729Ab3AAa199C1753f726"
 
 function App() {
   // store greeting in local state

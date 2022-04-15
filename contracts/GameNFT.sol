@@ -163,7 +163,7 @@ contract GameNFT is ERC721URIStorage{
         return playerInfo;
     }
 
-    function burn(uint tokenID) public returns (uint){
+    function burn(uint tokenID) private returns (uint){
         delete tokenInfos[tokenID];
         _burn(tokenID);
         return tokenID;

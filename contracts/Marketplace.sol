@@ -52,6 +52,10 @@ contract Marketplace is ReentrancyGuard{
     // nonReentrant Prevents a contract from calling itself, directly or indirectly.
     function createMarketItem(address nftContract, uint tokenID,
         uint price) public payable nonReentrant {
+
+        address tokenOwner = GameNFT(nftContract).ownerOf(tokenID);
+        require(tokenOwner == msg.sender, "You are not the onwer of this token");
+
         console.log(msg.value);
         require(price > 0, "The price should be > 0");
         // require(msg.value == shelfPrice, "Value must equal to shelfPrice");
@@ -88,8 +92,13 @@ contract Marketplace is ReentrancyGuard{
 
     //
     function buyItem(address nftContract, uint itemID) public payable nonReentrant{
-        uint price = idToMarketItem[itemID].price;
         uint tokenID = idToMarketItem[itemID].tokenID;
+        require(tokenID != 0, "tokenID hasn't been listed");
+
+        address tokenOwner = idToMarketItem[itemID].owner;
+        require(tokenOwner == address(0), "token is not owned by Marketplace");
+
+        uint price = idToMarketItem[itemID].price;
         // require(msg.value == price, "Please pay the asking price");
 
         // Transfer Item to msg.sender
