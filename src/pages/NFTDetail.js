@@ -97,7 +97,7 @@ const NFTDetail = () => {
     const signer = provider.getSigner()
     const contract = new ethers.Contract(marketplaceAddress, Marketplace.abi, signer)
     try {
-      const data = await contract.buyItem(state.item.contract, state.item.tokenID, {value: ethers.utils.parseEther(state.item.price.toString())})
+      const data = await contract.buyItem(state.item.contract, state.item.itemID, {value: ethers.utils.parseEther(state.item.price.toString())})
       console.log('data: ', data)
 
       const NFT = Moralis.Object.extend("NFT");
@@ -154,10 +154,16 @@ const NFTDetail = () => {
         console.log(ethers.utils.parseEther(Moralis.Units.FromWei(listPrice.toString())))
         console.log(nft.get("price"))
         console.log(ethers.utils.parseEther(nft.get("price").toString()))
-        const data = await contract.createMarketItem(state.item.contract, nft.get("tokenID"),
+        const transaction = await contract.createMarketItem(state.item.contract, nft.get("tokenID"),
             ethers.utils.parseEther(nft.get("price").toString()),
             {value: ethers.utils.parseEther(Moralis.Units.FromWei(listPrice.toString()))})
-        console.log('data: ', data)
+        const rc = await transaction.wait()
+        const event = rc.events.find(event => event.event === "MarketItemCreated")
+        const q = event.args[0]
+        console.log("args", event.args)
+        console.log(transaction)
+        const itemID = parseInt(q._hex, 16);
+        nft.set("itemID", itemID)
         nft.set("publisher", state.item.owner)  // publisher should be himself
         nft.set("owner", marketplaceAddress); // transfer it to the market!
       } catch (err) {
