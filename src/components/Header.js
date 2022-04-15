@@ -34,11 +34,11 @@ const Header = () => {
 
         <div id="link-containers">
           <a onClick={() => navigate("/explore")}>Start Hunting</a>
-          <a>Dark NFTs</a>
+          <a onClick={() => navigate("/arena")}>Game Arena</a>
           <a onClick={() => navigate("/collection")}>My Collection</a>
           <a onClick={() => navigate("/create")}>Craft NFT</a>
           {!isAuthenticated ? null : <a>{"Welcome, " + user.get("ethAddress")}</a> }
-          <button id="connect-wallet" onClick={!isAuthenticated ? login : logOut}  disabled={isAuthenticating}>{!isAuthenticated ? 'Connect Wallet' : 'Logout'}</button>
+          <button id="connect-wallet" onClick={!isAuthenticated ? login : logOut}  disabled={isAuthenticating}>{!isAuthenticated ? 'Login' : 'Logout'}</button>
         </div>
       </div>
     );

@@ -7,11 +7,10 @@ import Card from "./base/Card";
 import Button from "./base/Button";
 import { Colors } from "../constants/Colors";
 
-
 import { ModelViewerElement } from "@google/model-viewer";
 import { useARStatus } from "../hooks/isARStatus";
-
-
+import {useNavigate} from "react-router-dom";
+import Moralis from "moralis";
 
 const NFTCard = ({
                    tokenType,
@@ -19,7 +18,12 @@ const NFTCard = ({
                    price,
                    img,
                    like,
-                   onClick
+                   inTeam,
+                   tokenID,
+                   onClick,
+                   handleChangeTeam,
+                   handleFight,
+                   page
 }) => {
   const [isLike, setIsLike] = useState(false);
   const [colors, setColors] = useState([]);
@@ -27,7 +31,8 @@ const NFTCard = ({
   const isARSupport = useARStatus(img);
 
   useEffect(() => {
-    console.log(isARSupport);
+    // console.log(isARSupport);
+    console.log(tokenID, "in Team?", inTeam)
   }, [])
 
   const handleLike = () => setIsLike(!isLike);
@@ -42,10 +47,9 @@ const NFTCard = ({
     console.log(e.target.innerText);
   }
 
-
   return (
     <Card
-      blurColor={colors[0]}
+      blurColor={colors[0]} inTeam={inTeam}
 
       child={<>
         {
@@ -67,14 +71,23 @@ const NFTCard = ({
           <div className="price-container">
             <p className="price-label">Price{" "}
               <FaEthereum /></p>
-            <p className="price" contentEditable={"true"} onInput={handleChange}>
+            <p className="price" onInput={handleChange}>
                {price}
             </p>
           </div>
         </div>
         <div className="buttons">
           {/* <button className="buy-now">Buy Now</button> */}
-            <Button color={Colors.buttons.primary} textContent="Detail" onClick={onClick} />
+          {
+            page === "arena-true" ? <Button color={inTeam ? "yellow" :Colors.buttons.secondary}
+                                            textContent={inTeam ? "Quit" : "Set in Team"}
+                                            onClick={() => handleChangeTeam(tokenID)} /> :
+            page === "arena-false" ? <Button color={inTeam ? "yellow" :Colors.buttons.danger}
+                                             textContent={inTeam ? "Quit" : "Fight"}
+                                             onClick={inTeam? () => handleChangeTeam(tokenID) : () => handleFight(tokenID)} /> : null
+          }
+
+          <Button color={Colors.buttons.primary} textContent="Detail" onClick={onClick} />
           <div className="like-container">
             <button className="like" onClick={handleLike}>
               {!isLike ? (

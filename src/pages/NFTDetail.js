@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useLocation, Navigate } from "react-router";
 import Card from "../components/base/Card";
 import "../styles/NFTDetail.css";
+import "../styles/utils.css"
 import { ColorExtractor } from "react-color-extractor";
 import Button from "../components/base/Button";
 import { FaEthereum } from "react-icons/fa";
@@ -20,7 +21,8 @@ import Moralis from "moralis";
 import {ethers} from "ethers";
 import Marketplace from "../artifacts/contracts/Marketplace.sol/Marketplace.json";
 import {useMoralis} from "react-moralis";
-const marketplaceAddress = "0x4ed7c70F96B99c776995fB64377f0d4aB3B0e1C1"
+import {arenaAddress, gameNFTAddress, marketplaceAddress} from "../App"
+import Arena from "../artifacts/contracts/Arena.sol/Arena.json";
 
 
 
@@ -41,6 +43,11 @@ const NFTDetail = () => {
   const navigate = useNavigate();
 
   const { state } = useLocation();
+
+  const [inTeam, setInTeam] = useState(state.item.inTeam);
+
+  useEffect(() => {
+  }, [inTeam]);
 
   useEffect(() => {
     setColors([]);
@@ -63,6 +70,10 @@ const NFTDetail = () => {
   const handleListed = () => {
     setIsListed(!isListed);
   }
+
+  const attr = Object.keys(state.item.attributes).map(key =>
+      <span className="game-prop-line" key={key}>{key}: {state.item.attributes[key]}</span>
+  )
 
 
   const buy = async () => {
@@ -110,6 +121,11 @@ const NFTDetail = () => {
     // field check
     if (!price) {
       alert("Please set the price!")
+      return
+    }
+    const _team = await getTeamUserByToken(state.item.tokenID)
+    if (_team.length) {
+      alert("You can't modify an item when it's in your team!")
       return
     }
     // fetch item from database
@@ -165,13 +181,130 @@ const NFTDetail = () => {
     });
   }
 
+
+  const NFT = Moralis.Object.extend("NFT");
+  const team = Moralis.Object.extend("Team");
+  // Team functions
+  const getTeamTokenByUser = async (user_address) => {
+    const agent = new Moralis.Query(team);
+    agent.equalTo("user", user_address);
+    return await agent.find();
+  }
+  const getTeamUserByToken = async (tokenID) => {
+    const agent = new Moralis.Query(team);
+    agent.equalTo("tokenID", tokenID);
+    return await agent.find();
+  }
+
+  // NFT functions
+  const getNFTByID = async (tokenID) => {
+    const agent = new Moralis.Query(NFT);
+    agent.equalTo("tokenID", tokenID);
+    return await agent.first();
+  }
+
+  const handleFight = async (tokenID) => {
+    // require login
+    if (!Moralis.User.current()) {
+      alert('Please login to fight!')
+      return;
+    }
+    const user = Moralis.User.current();
+    const attacker = user.get("ethAddress");
+    const userTeam = await getTeamTokenByUser(attacker);
+    if (!userTeam.length) {
+      alert('You need to setup a team first!')
+      return;
+    }
+    const defender = (await getTeamUserByToken(tokenID))[0].attributes.user;
+    const attacker_token = await getNFTByID(userTeam[0].attributes.tokenID);
+    const defender_token = await getNFTByID(tokenID);
+    const params = {
+      attacker: {address: attacker, token: attacker_token.attributes},
+      defender: {address: defender, token: defender_token.attributes}
+    }
+    console.log(params)
+
+    // eslint-disable-next-line no-restricted-globals
+    if (confirm(`Start fighting with ${defender_token.attributes.name}?`)) {
+      navigate("/game", {state: params})
+    }
+  }
+
+  const handleChangeTeam = async (tokenID) => {
+    const user = Moralis.User.current();
+    const user_address = user.get("ethAddress");
+    const results = await getTeamTokenByUser(user_address);
+
+    // setting up the contract
+    if (typeof window.ethereum !== 'undefined') {
+      await window.ethereum.request({ method: 'eth_requestAccounts' });
+    }
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    const signer = provider.getSigner()
+    const contract = new ethers.Contract(arenaAddress, Arena.abi, signer)
+
+    // quit the arena
+    if (results.length && results[0].get("contract") === gameNFTAddress && results[0].get("tokenID") === tokenID) {
+      try {
+        const data = await contract.quitArena()
+        console.log('data: ', data)
+        await results[0].destroy();
+        setInTeam(false);
+        return;
+      } catch (err) {
+        console.log("Error: ", err)
+      }
+    }
+    // change the Team
+    console.log(tokenID)
+    try {
+      const data = await contract.createPlayer(gameNFTAddress, tokenID,
+          { value: ethers.utils.parseEther("1") })
+      console.log('data: ', data)
+
+      // put in the database
+      // a new team
+      if (results.length === 0) {
+        const myTeam = new team();
+        myTeam.set("user", user_address);
+        myTeam.set("contract", gameNFTAddress);
+        myTeam.set("tokenID", tokenID);
+        myTeam.save()
+            .then(async (res) => {
+              console.log('Team created!', res.get("user"), res.get("contract"), res.get("tokenID"));
+              alert("Successfully created!");
+              setInTeam(true);
+            }, (error) => {
+              alert('Failed to create, with error code: ' + error.message);
+            });
+      }
+      // update the team
+      else {
+        const myTeam = results[0];
+        myTeam.set("contract", gameNFTAddress);
+        myTeam.set("tokenID", tokenID);
+        myTeam.save()
+            .then(async (res) => {
+              console.log('Team updated!', res.get("user"), res.get("contract"), res.get("tokenID"));
+              alert("Successfully updated!");
+              setInTeam(true);
+            }, (error) => {
+              alert('Failed to update, with error code: ' + error.message);
+            });
+      }
+    } catch (err) {
+      console.log("Error: ", err)
+    }
+  }
+
   return (
     <div>
       <Header />
       <div id="nft-detail-card-wrapper">
         <Card
           width={isMobile ? "100%" : "65vw"}
-          height={isMobile ? "700px" : "60vh"}
+          height={isMobile ? "100%" : "70vh"}
           blurColor={colors[0]}
           child={
             //Detail Content
@@ -185,21 +318,28 @@ const NFTDetail = () => {
               }
 
               <div id="detail-info" style={{}}>
-                <div id='detail-info-container' style={{"position": "relative", "height": "80%"}}>
+                <div id='detail-info-container' style={{"position": "relative", "height": "87%"}}>
                   <p id="name"> {state.item.name} </p>
                   <p id="collection"> {state.item.tokenType === 1 ? "Artwork" : "Game Prop"} </p>
                   <p id="description" > {state.item.description} </p>
+                  {
+                    state.item.tokenType === 1 ? null :
+                        <div id="game-prop-attr">
+                          <p id="game-prop-title"> Prop attributes: </p>
+                          {attr} </div>
+                  }
+
                   {state.page === "collection" ?
-                    <div>
-                      <TextInput style={{"position": "absolute", "bottom": "60px"}} child={
-                        <label className="container" style={{"font-size": "25px"}}>
+                    <div className="box-wrapper">
+                      <TextInput style={{marginBottom: "10px", "width": "80%"}} child={
+                        <label className="container" style={{"fontSize": "25px"}}>
                           {"Publish your NFT!"}
                           <input type="checkbox" onChange={handleListed} checked={isListed}/>
                           <span className="checkmark"/>
                         </label>
                       }/>
-                      <TextInput style={{"position": "absolute", "bottom": "0"}} icon={<FaEthereum style={{"color": "#C6C2C6"}} size="28px"/>} child={
-                        <input id="search" style={{"font-size": "25px"}} placeholder={"Name"} onChange={handlePrice} value={price}/>
+                      <TextInput style={{"width": "80%"}} icon={<FaEthereum style={{"color": "#C6C2C6"}} size="28px"/>} child={
+                        <input id="search" style={{"fontSize": "25px"}} placeholder={"Name"} onChange={handlePrice} value={price}/>
                       }/>
 
                     </div>
@@ -244,10 +384,16 @@ const NFTDetail = () => {
                       <p className="like-count">{state.item.like}</p>
                     </div>
                   </div>
-                  :
-                  <div>
+                  : state.page === "collection" ?
+                  <div style={{marginBottom: "10px"}}>
                     <Button width='100px' height='50px' color={Colors.buttons.secondary} textContent="Submit" onClick={modify}/>
                   </div>
+                        : state.page === "arena-true" ? <Button color={inTeam ? "yellow" :Colors.buttons.secondary}
+                                                          textContent={inTeam ? "Quit" : "Set in Team"}
+                                                          onClick={() => handleChangeTeam(state.item.tokenID)} /> :
+                            state.page === "arena-false" ? <Button color={inTeam ? "yellow" :Colors.buttons.danger}
+                                                             textContent={inTeam ? "Quit" : "Fight"}
+                                                             onClick={inTeam? () => handleChangeTeam(state.item.tokenID) : () => handleFight(state.item.tokenID)} /> : null
                 }
               </div>
             </div>

@@ -14,16 +14,18 @@ import {ColorExtractor} from "react-color-extractor";
 import {FaEthereum} from "react-icons/fa";
 import React from "react";
 import {useMobile} from "../hooks/isMobile";
+import {useNavigate} from "react-router-dom";
 
 import Moralis from "moralis";
 import GameNFT from '../artifacts/contracts/GameNFT.sol/GameNFT.json'
 import {ethers} from "ethers";
 import {useMoralis} from "react-moralis";
-const gameNFTAddress = "0xB7f8BC63BbcaD18155201308C8f3540b07f84F5e"
+import {gameNFTAddress} from "../App"
 
 const Create = () => {
   const padding = "5px";
   const isMobile = useMobile();
+  const navigate = useNavigate();
 
   const [name, setName] = useState("");
   useEffect(() => {
@@ -104,7 +106,8 @@ const Create = () => {
         "armor_growth": getRandomInt(1, 10),
         "speed_growth": getRandomInt(1, 10),
         "hp_growth": getRandomInt(1, 10),
-        "level": getRandomInt(1, 10)
+        "level": getRandomInt(1, 10),
+        "luck": getRandomInt(1, 100)
       }
     }
 
@@ -139,7 +142,7 @@ const Create = () => {
     const [q,w,e,c] = event.args
     console.log("args", event.args)
     console.log(transaction)
-    const tokenID = q;
+    const tokenID = parseInt(q._hex, 16);
 
 
     // create reference in database
@@ -164,7 +167,10 @@ const Create = () => {
         .then((nft) => {
           // Execute any logic that should take place after the object is saved.
           console.log('New object created with objectId: ' + nft.id);
-          alert("Successfully create! Name: " + name + ", Desc:" + desc);
+          // eslint-disable-next-line no-restricted-globals
+          if (confirm("Successfully create! Name: " + name + ", Desc:" + desc)){
+            navigate('/collection');
+          }
         }, (error) => {
           // Execute any logic that should take place if the save fails.
           // error is a Moralis.Error with an error code and message.
@@ -183,16 +189,16 @@ const Create = () => {
             //Detail Content
             <div id="detail-content">
 
-              <div id="detail-info" style={{"text-align": "center", "justify-content": "center", "width": "100%"}}>
+              <div id="detail-info" style={{"textAlign": "center", "justifyContent": "center", "width": "100%"}}>
                 <div id='detail-info-container'>
                   <TextInput type={"radio"} height={"60px"} setValue={setTokenType} padding={padding} child={
                     <div>
-                      <label className="container" style={{"font-size": "20px"}}>
+                      <label className="container" style={{"fontSize": "20px"}}>
                         {"Artwork"}
                         <input type="radio" onChange={handleTokenType} value={"artwork"} name={"tokentype"} defaultChecked/>
                         <span className="checkmark"/>
                       </label>
-                      <label className="container" style={{"font-size": "20px"}}>
+                      <label className="container" style={{"fontSize": "20px"}}>
                         {"Game Prop"}
                         <input type="radio" onChange={handleTokenType} value={"game prop"} name={"tokentype"}/>
                         <span className="checkmark"/>
@@ -203,7 +209,7 @@ const Create = () => {
                     <input id="search" placeholder={"Name"} onChange={handleName}/>
                   }/>
                   <TextInput height={"300px"} padding={padding} child={
-                    <textarea id="search" style={{"resize":"none", "border-radius":"0px"}} placeholder={"Description"} onChange={handleDesc}/>
+                    <textarea id="search" style={{"resize":"none", "borderRadius":"0px"}} placeholder={"Description"} onChange={handleDesc}/>
                   }/>
                   <TextInput padding={padding} child={
                     <input id="search" type="file" onChange={handleFile}/>
@@ -216,7 +222,7 @@ const Create = () => {
                     height="40px"
                     padding={padding}
                     textContent="Submit"
-                    color={Colors.buttons.succes}
+                    color={Colors.buttons.success}
                     onClick={handleClick}
                   />
                 </div>
